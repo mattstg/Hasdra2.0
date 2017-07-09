@@ -15,9 +15,9 @@ public class triangleWB : worldBit{
 		scaleOffset = new Vector2 (MAP_GV._xIncrement, slope * MAP_GV._xIncrement);
 		Vector2 tempS = transform.localScale;
 		if(type == BitType.pos)
-			transform.localScale = new Vector3(tempS.x * scaleOffset.x, tempS.y * scaleOffset.y, 1);
+			transform.localScale = new Vector3(tempS.x * scaleOffset.x  * -1, tempS.y * scaleOffset.y, 1);
 		else
-			transform.localScale = new Vector3(tempS.x * scaleOffset.x * -1, -1 * tempS.y * scaleOffset.y, 1);
+			transform.localScale = new Vector3(tempS.x * scaleOffset.x, -1 * tempS.y * scaleOffset.y, 1);
 	}
 
 	public override void SetToWorldPos(Vector2 toSet){

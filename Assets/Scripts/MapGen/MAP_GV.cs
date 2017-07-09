@@ -14,7 +14,7 @@ public class MAP_GV : MonoBehaviour {
 
 
 	enum _tileType {W, B, Wn}
-	public static string tileType = "W"; // "W" , "", or "Wn"
+	public static string tileType = "Wn"; // "W" , "", or "Wn"
 
 	// Use this for initialization
 	void Start () {
