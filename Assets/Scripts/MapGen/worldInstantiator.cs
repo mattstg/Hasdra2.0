@@ -69,9 +69,7 @@ public class worldInstantiator : MonoBehaviour {
 
 
 	public worldBit InstantiateWB(worldBit.BitType type){
-		string s = "";
-		if (MAP_GV._whiteTile)
-			s = "W";
+		string s = MAP_GV.tileType;
 		GameObject _worldBit = null;
 		switch (type) {
 		case worldBit.BitType.pos:
