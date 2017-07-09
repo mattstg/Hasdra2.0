@@ -8,9 +8,16 @@ public class LevelLoader : MonoBehaviour {
 
     public void Start()
     {
+        //Retrieve persistant info (round setup info) that the round scene left for us to initialize with
         PersistantRoundSetupInfo persistanceInfo = GameObject.FindObjectOfType<PersistantRoundSetupInfo>();
-        GV.NumOfPlayers = (persistanceInfo.avatarBlueprints.Count);
 
+        //Initialize physical world
+        GameObject.FindObjectOfType<worldInstantiator>().InitializeWorld(persistanceInfo.worldInitParams);
+        foreach (SolidMaterial sm in GameObject.FindObjectsOfType<SolidMaterial>())
+            sm.InitializeMaterial();
+
+
+        GV.NumOfPlayers = (persistanceInfo.avatarBlueprints.Count);
         if (persistanceInfo) // if persistance info doesnt exist, then i load a default character.. somewhere else  (search for persitance info)
         {
             LoadPlayers(persistanceInfo);
@@ -46,7 +53,8 @@ public class LevelLoader : MonoBehaviour {
         foreach (AvatarBlueprint blueprint in persistanceInfo.avatarBlueprints)
         {
             PlayerControlScript newPcs = TheForge.Instance.BuildAvatarPlayer(blueprint);
-            newPcs.transform.position = GameObject.FindObjectOfType<StartingLocations>().GetStartingPosition(blueprint.startingPosName);
+            float xStart = blueprint.pid * 5 - 10;
+            newPcs.transform.position = new Vector2(xStart, GameObject.FindObjectOfType<worldInstantiator>().GetSurfacePoint(xStart) + 10); //GameObject.FindObjectOfType<StartingLocations>().GetStartingPosition(blueprint.startingPosName);
             GV.worldUI.players.Add(newPcs.pid, newPcs); 
         }
     }

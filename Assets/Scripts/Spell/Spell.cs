@@ -151,7 +151,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
             return;
         }
 
-        Debug.Log("Updating, energy current: " + spellInfo.currentEnergy + ", " + spellInfo.energyInSideBank);
+        //Debug.Log("Updating, energy current: " + spellInfo.currentEnergy + ", " + spellInfo.energyInSideBank);
         spellInfo.currentEnergy += spellInfo.energyInSideBank;
         spellInfo.spellPos = transform.position;
         spellInfo.currentAngle = facingAng;
@@ -549,6 +549,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
 
     public float ChargeThisSpell(float energyTransfered, BodyStats _bodystatsOfCaster)//float energyToForceEff, float energyToSkillModEfficency)
     {
+        //Debug.Log("Energy transfered to charge this spell: " + energyTransfered);
         //spellBridgeParent.bodyStats.getSkillValue("energyUseEfficiency"), 
         if (spellInfo.currentEnergy >= GV.SPELL_MIN_ENERGY_BEFORE_CHARGE_SKILLMODS) //then can charge skillmods  SPELL_MAX_PERCENT_CONSUMED_FOR_SKILLMOD
             energyTransfered = DistributeEnergyToChargingSkillMods(energyTransfered, _bodystatsOfCaster.getSkillValue("skillModChargeEfficency"));
@@ -557,7 +558,8 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
         massToForceRatio++; //increase by one cause math
         float energyToSpell = energyTransfered / massToForceRatio;
         float energyToVelo = energyTransfered - energyToSpell;
-        //Debug.Log("massToForceRatio: " + massToForceRatio + ", weight per energy: " + MaterialDict.Instance.GetWeightPerEnergy(spellInfo.materialType) + ", initial velo: " + spellInfo.initialLaunchVelo + ", energyToForceEff: " + energyToForceEff);
+
+        //Debug.Log("massToForceRatio: " + massToForceRatio);
         //Debug.Log("energy transfer: " + energyTransfered + ", but is split ==> spell: " + energyToSpell + ", Velo: " + energyToVelo);
         //Debug.Log(string.Format("energy to spell {0}, energy to velo {1}", energyToSpell, energyToVelo));
         if (spellInfo.castOnChargeParam == GV.CastOnCharge.CastNoRepeat || spellInfo.castOnChargeParam == GV.CastOnCharge.CastWithRepeat || spellInfo.castOnChargeParam == GV.CastOnCharge.Hold)

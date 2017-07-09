@@ -67,11 +67,14 @@ public class SpellBridge : MonoBehaviour {
 
             //Debug.Log("skill value for transfer: " + stats.getSkillValue("energyTransferRate"));
             energyToChargingSpell = (stats.getSkillValue ("energyTransferRate")) * Time.deltaTime;
+            //Debug.Log("energyToChargingSpell max: " + energyToChargingSpell);
             if (energyToChargingSpell > stats.energy)
                 energyToChargingSpell = stats.energy;
             stats.energy -= energyToChargingSpell;
+            //Debug.Log("energyToChargingSpell: " + energyToChargingSpell);
             float excessEnergy = _ChargeSpell(pressedSpellName, energyToChargingSpell);
             stats.energy += excessEnergy;
+            //Debug.Log("energyToChargingSpell excess energy: " + excessEnergy);
             //Debug.Log("charging spell: " + energyToChargingSpell);
         }
         return true;
@@ -133,8 +136,10 @@ public class SpellBridge : MonoBehaviour {
         bool willFire = false;
         //transfer energy and return excess, but alter fire mode as well
         float energyLossFromEfficency = energyToChargingSpell * spellBridgeParent.bodyStats.getSkillValue("energyUseEfficiency"); //Int Bodystats probably one level up
+        //Debug.Log("EnergyUseEffeicency bodystat: " + spellBridgeParent.bodyStats.getSkillValue("energyUseEfficiency"));
         float energyLossFromMelee = EnergyLossFromMeleeCharge(energyToChargingSpell - energyLossFromEfficency);
         float energyPassing = energyToChargingSpell - energyLossFromEfficency - energyLossFromMelee;
+
         //Debug.Log(string.Format("EnergyIn: {0}, EnergyLossFromEfficency(mat & player): {1}, energyLossFromMelee: {2}, energy passing in total to spell charge {3}",energyToChargingSpell,energyLossFromEfficency,energyLossFromMelee,energyPassing));
         LiveWorldStats.Instance.AddWorldEnergy(energyLossFromEfficency + energyLossFromMelee);
         float overchargeEnergy = currentSpell.ChargeThisSpell(energyPassing, spellBridgeParent.bodyStats);

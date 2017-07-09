@@ -21,18 +21,31 @@ public class worldInstantiator : MonoBehaviour {
 	private float totalLowest;
 	perlinManager currentMap;
 
+    Transform unityParent; //Used to store transforms for hiearchy
+
 
 	// Use this for initialization
-	void Start () {
+	public void InitializeWorld (WorldInitParams initParams)
+    {
+        if(initParams != null) //If null use above/editor values, otherwise take values from round setup
+        {
+            gain = initParams.gain;
+            lacunarity = initParams.lacunarity;
+            octaves = initParams.octaves;
+            baseWave = initParams.baseWave;
+            baseAmp = initParams.baseAmp;
+            mapMin = initParams.mapMin;
+            mapMax = initParams.mapMax;
+            tileType = initParams.tileType;
+            mapYOffset = initParams.mapYOffset;
+        }
+        unityParent = new GameObject().transform;
+        unityParent.name = "WhiteWorld";
 				// x range, y range ......... gain  lacunarity   octaves   baseWave  baseAmp 
 		currentMap = new perlinManager( gain, lacunarity, octaves, baseWave,  baseAmp);
 		Generate (mapMin, mapMax, currentMap);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
 
 	public void Generate(float startX, float endX, perlinManager _func){
 		totalLowest = _func.lowestOverInterval (startX, MAP_GV._xIncrement, endX);
@@ -92,10 +105,19 @@ public class worldInstantiator : MonoBehaviour {
 			Debug.Log ("Here??!?!?");
 			break;
 		}
-		return _worldBit.GetComponent<worldBit> ();;
+        _worldBit.transform.SetParent(unityParent);
+
+        return _worldBit.GetComponent<worldBit> ();;
 	}
 
 	public float GetSurfacePoint(float x){
 		return currentMap.retY (x);
 	}
+
+    public class WorldInitParams
+    {
+        public float gain, lacunarity, octaves, baseWave, baseAmp, mapMin, mapMax, mapYOffset;
+        public int tileType;
+    }
+
 }

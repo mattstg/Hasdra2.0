@@ -273,8 +273,8 @@ public class GV : MonoBehaviour
 
     // //////////////////////////////////////////////////////////////   COMPLEX ASS
     /// ///////////////////////////////////////////////////////////              @control   MIN      MAX   PERCENT   TYPE
-    public static readonly AssStorage as_energyToSpellChargeRate      = new AssStorage(100 ,   1f,    100,  50,  GV.HorzAsym.MinToMax);
-    public static readonly AssStorage as_energyChargeLossFromMaterial = new AssStorage(50,    .20f,     1,  80,  GV.HorzAsym.MaxToMin);
+    public static readonly AssStorage as_energyToSpellChargeRate      = new AssStorage(100,    1f,    100,  50,  GV.HorzAsym.MinToMax);
+    public static readonly AssStorage as_energyChargeLossFromMaterial = new AssStorage(50,     0f,    .2f,  80,  GV.HorzAsym.MaxToMin); //Multiplies by energy coming in, players start with 20% loss, go towards 0%
     public static readonly AssStorage as_stanimaTransferToSpell       = new AssStorage(100,    1f,    100,  50,  GV.HorzAsym.MinToMax);
     public static readonly AssStorage as_stanimaToEnergyRatio         = new AssStorage(100,    1.2f, 2.5f,  50,  GV.HorzAsym.MinToMax);
 	public static readonly AssStorage as_meleeDecayCoeff              = new AssStorage(50,     1,       2,  80,	GV.HorzAsym.MaxToMin);   //multiplier for how much faster it loses energy if melee
@@ -285,7 +285,7 @@ public class GV : MonoBehaviour
     //public static readonly AssStorage as_meleeRangeEff                = new AssStorage(50,   .05f,   .2f,  50,  GV.HorzAsym.MaxToMin);  //energy loss when charging a melee spell based on range calculations
     public static readonly AssStorage as_airDragTime                  = new AssStorage(50,     1f,     2f,  50,  GV.HorzAsym.MaxToMin);  //time in air before lose mobility
     public static readonly AssStorage as_concussRecoverSpeed          = new AssStorage(50,    .5f,      2,  50,  GV.HorzAsym.MinToMax);
-    public static readonly AssStorage as_dmgResist                    = new AssStorage(50,     1f,    .2f,  50,  GV.HorzAsym.MinToMax);  //dmg reduction is multiplied by incoming dmg
+    public static readonly AssStorage as_dmgResist                    = new AssStorage(50,    .2f,     1f,  50,  GV.HorzAsym.MaxToMin);  //dmg reduction is multiplied by incoming dmg
     public static readonly AssStorage spellSize = new AssStorage(30, 1f, 8, 10, GV.HorzAsym.MinToMax);
 
     //public static readonly AssStorage as_maximumHp = new AssStorage(50, 100, 2500, HorzAsym.MinToMax);

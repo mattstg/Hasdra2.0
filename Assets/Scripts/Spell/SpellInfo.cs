@@ -23,7 +23,7 @@ public class SpellInfo{
     public List<GV.InteractionType> interactionParams = new List<GV.InteractionType>();
     public float smVariable = 0;
     private float _curEnergy = 0;
-    public float currentEnergy{set{ Debug.Log("Setting energy: " + value); ChangeEnergy(value);} get{ Debug.Log("Returning energy: " + _curEnergy);  return _curEnergy;}}
+    public float currentEnergy{set{  ChangeEnergy(value);} get{ return _curEnergy;}}
     public float timeInState = 0f;
     public float timeAlive = 0f;
     public float timeForCasterImmunity;
