@@ -27,7 +27,7 @@ public class PowerUpAnimationLibrary  {
     {
         try
         {
-            string[] animatorFiles = System.IO.Directory.GetFiles("Assets/Hasdra/Resources/Animations/PoweringUpAnimations/" + creatureName, "*.controller"); //gets all animations
+            string[] animatorFiles = System.IO.Directory.GetFiles("Assets/Resources/Animations/PoweringUpAnimations/" + creatureName, "*.controller"); //gets all animations
             return GetAllStringsStartWith(animatorFiles,"t" + tier.ToString());
         }
         catch

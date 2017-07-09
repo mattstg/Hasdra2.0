@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class Plant : MonoBehaviour {
 
-    public Biome plantEnviroment;
     List<Bush> bushSpots; //tree should take care of growing these
     List<Branch> branches; //tree can randomly pick one to grow
     PlantDNA DNA;
@@ -112,15 +111,15 @@ public class Plant : MonoBehaviour {
 
     private void CalculateHappiness() //should be also based upon amount of time that has passsed, atm 
     {
-        happiness -= Mathf.Abs(DNA.getDNA("desiredTemp") - plantEnviroment.currentTemp); //atm good temp wont make him happy, just bad temp unhappy, fix it when can <<
+        /*happiness -= Mathf.Abs(DNA.getDNA("desiredTemp") - plantEnviroment.currentTemp); //atm good temp wont make him happy, just bad temp unhappy, fix it when can <<
         happiness += ManaStored / maxManaStorage;
         happiness += nutrientStored / maxNutrientStorage;
-        happiness += moistureStored / maxMoistureStorage;
+        happiness += moistureStored / maxMoistureStorage;*/
     }
 
     private void UptakeFromEnviro()
     {
-        if (nutrientStored < maxNutrientStorage)
+       /* if (nutrientStored < maxNutrientStorage)
         {
             float d = maxNutrientStorage - nutrientStored;
             d = (d>plantLevel)?plantLevel:d; //desire of nutrients capped by plant level (intake speed)
@@ -137,7 +136,7 @@ public class Plant : MonoBehaviour {
             float d = maxManaStorage - ManaStored;
             d = (d > plantLevel) ? plantLevel : d; //desire of nutrients capped by plant level (intake speed)
             ManaStored += plantEnviroment.TakeMana(d);
-        }
+        }*/
     }
 
     private void UpdatePlantStats()

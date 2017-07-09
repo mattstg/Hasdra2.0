@@ -65,7 +65,7 @@ public class SpellDestabilization : MonoBehaviour {
 	}
 
     //Absorbing, getting absorbed or taking dmg all utilize this, This formula seems a tad odd.
-    public void Absorb(float energyBeingAbsorbed, GV.MaterialType matBeingAbsorbed, float otherSpeed, bool coresTouching, GV.BasicColiType colType)
+    public void Absorb(float energyBeingAbsorbed, float otherSpeed, bool coresTouching, GV.BasicColiType colType)
     {
         //Get despellInfo.stabilityfrom absorbing, or from being absorbed, the faster your moving, the more destable youll get
         // (absorbed/devourer)*matDict*velo
@@ -81,7 +81,7 @@ public class SpellDestabilization : MonoBehaviour {
             percentIncreaseFromColiType = GV.DESTABILITY_TERRAIN_MODIFIER;
         }
         float energyRatio = energyBeingAbsorbed / spellInfo.currentEnergy;
-        float totalToSub = (energyRatio * MaterialDict.Instance.GetDistability(spellInfo.materialType, matBeingAbsorbed) * percentIncrease * percentIncreaseFromColiType);
+        float totalToSub = (energyRatio * GV.SPELL_DISTABILITY * percentIncrease * percentIncreaseFromColiType);
         //Debug.Log(string.Format("Spell {0}, Total sub {1}, from energy ratio({2})*matDictDist({3})*percIncrease({4})*percIncreaseFromcoliType({5})", spellInfo.materialType, totalToSub, energyRatio, MaterialDict.Instance.GetDistability(spellInfo.materialType, matBeingAbsorbed),percentIncrease,percentIncreaseFromColiType));
 
         totalToSub *= (coresTouching)?GV.CORES_TOUCHING_DESTABLE_MULT:1;
@@ -106,16 +106,16 @@ public class SpellDestabilization : MonoBehaviour {
 
     public void CollideWithEntity()
     {
-        spellInfo.stability -= MaterialDict.Instance.GetDestabilityVsEntity(spellInfo.materialType);  //ethier 1 or 0 to force explosion or not
+        spellInfo.stability -= 1;  //ethier 1 or 0 to force explosion or not
     }
 
-    public void TakeDamage(float energyBeingAbsorbed, GV.MaterialType matBeingAbsorbed)
+    public void TakeDamage(float energyBeingAbsorbed)
     { //Destab from takeDamage 
 
 
         //float percentIncrease = 1 + rbod.velocity.magnitude * GV.DESTABILITY_PER_VELO; //my speed doesnt matter thats taken into account already
         float energyRatio = energyBeingAbsorbed / spellInfo.currentEnergy;
-        float totalToSub = (energyRatio * MaterialDict.Instance.GetDistability(spellInfo.materialType, matBeingAbsorbed));
+        float totalToSub = energyRatio * GV.SPELL_DISTABILITY;
         spellInfo.stability -= totalToSub;
         //Debug.Log(string.Format("Stability {0} after losing {1}", spellInfo.stability, totalToSub));
     }

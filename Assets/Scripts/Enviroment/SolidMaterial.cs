@@ -5,7 +5,6 @@ using System.Collections;
 public class SolidMaterial : MonoBehaviour, DestructibleInterface {
 
     public SpellInfo spellInfo;
-    public GV.MaterialType InitialMaterialType = GV.MaterialType.Rock;  //THIS IS ONLY USED BY TERRA, AND IS THIS WAY SO CAN BE EASILY EDITED IN EDITOR, ONLY USED ONCE ON TERRA INITIALIZATION
     public float InitialDensity = 1;                                    //Same as above, use spell infos instead.
     public bool DEBUG_ON = false;
     public bool indestructible = false;
@@ -71,15 +70,14 @@ public class SolidMaterial : MonoBehaviour, DestructibleInterface {
     public void InitializeMaterial()
     {
         spellInfo = new SpellInfo();
-        spellInfo.materialType = InitialMaterialType;
         SetMaterialProperties(true); //here the raw pixels are set
         float unitArea = spellInfo.numOfPixels / GV.PIXELS_PER_UNITAREA;
         float initialEnergy = unitArea * InitialDensity * transform.localScale.x * transform.localScale.y * GV.GROUND_ENERGY_PER_UNIT_AREA;
-        float totalMass = MaterialDict.Instance.GetWeightPerEnergy(spellInfo.materialType) * initialEnergy;
+        float totalMass = GV.SPELL_FORM_WEIGHT_BASE[(int)spellInfo.spellForm] * initialEnergy;
         if(DEBUG_ON) Debug.Log("UnitArea: " + unitArea + ", initialEnergy: " + initialEnergy + ", totalMass: " + totalMass);
         spellInfo.mass = totalMass;
         spellInfo.currentEnergy = initialEnergy;
-        defenseScore = MaterialDict.Instance.GetStampValue(spellInfo.materialType, false, spellInfo.currentEnergy, spellInfo.densityEffect);
+        defenseScore = GV.STAMP_SPELL_BASE_DEFENSE * spellInfo.densityEffect;
         maxHp = spellInfo.currentEnergy;
         this.gameObject.tag = "Terrain"; //wonder if i still need this or if its been resolved by the clone?
         SetToDesiredPixels();
@@ -94,12 +92,12 @@ public class SolidMaterial : MonoBehaviour, DestructibleInterface {
         spellInfo = _spellInfo;
         if (spellInfo == null)
             Debug.Log("dif prob");
-        bool isSplitChild = (newNumberOfPixels != -1);        
-        defenseScore = MaterialDict.Instance.GetStampValue(spellInfo.materialType,false,spellInfo.currentEnergy, spellInfo.densityEffect);
+        bool isSplitChild = (newNumberOfPixels != -1);
+        defenseScore = GV.STAMP_SPELL_BASE_DEFENSE * spellInfo.densityEffect;
         maxHp = spellInfo.currentEnergy;
         this.gameObject.tag = "Terrain"; //wonder if i still need this or if its been resolved by the clone?
         SetMaterialProperties(false, !isSplitChild);        
-        if (GV.GetSpellFormByMaterialType(spellInfo.materialType) == GV.SpellForms.Energy) //Physical type optimize at a way earlier stage, energy at this stage is first time recieving destr
+        if (spellInfo.spellForm == GV.SpellForms.Energy) //Physical type optimize at a way earlier stage, energy at this stage is first time recieving destr
         {
             for (int i = 0; i < GV.SPELL_PIXEL_OPTIMZATION; i++)
             {
@@ -173,7 +171,7 @@ public class SolidMaterial : MonoBehaviour, DestructibleInterface {
         
         Destructible2D.D2dDestructible destr = GetComponent<Destructible2D.D2dDestructible>();
         //set the custom destructible values
-        destr.InitializeDestructible(spellInfo.materialType, this, false);
+        destr.InitializeDestructible(this, false);
         destr.SetIndestructible(indestructible);
         //set the destructible split properties
         destr.AutoSplit = Destructible2D.D2dDestructible.SplitType.Whole;
@@ -231,10 +229,10 @@ public class SolidMaterial : MonoBehaviour, DestructibleInterface {
     }
           
     //returns energy the other spell absorbs, so energy base will have to call this
-    public float GetAbsorbed(float _energyOfIncomingSpell, GV.MaterialType materialBeingAbsorbedBy)
+    public float GetAbsorbed(float _energyOfIncomingSpell)
     {
-        /*
-        float damageTaking = _energyOfIncomingSpell * MaterialDict.Instance.GetAbsorbtionResitance(materialType, materialBeingAbsorbedBy);
+        //If a energy based solid material gets absorbed this happens... so who gives a fuck?
+        /*float damageTaking = _energyOfIncomingSpell * GV.SPELL_ABSORB_OTHER;
         damageTaking = (damageTaking > life) ? life : damageTaking;
         life -= damageTaking;
         //stability -= (energyConsuming / (life)) * MaterialDict.Instance.GetDistability(materialType, materialBeingAbsorbedBy) * Time.deltaTime;  no stability for ground.. right now

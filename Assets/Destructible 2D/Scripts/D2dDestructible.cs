@@ -11,7 +11,6 @@ namespace Destructible2D
         //my vars
         DestructibleInterface DI;
         public float defensivePower;
-        private GV.MaterialType matType;
         private bool isDynamic;
 
 		public enum SplitType
@@ -358,12 +357,10 @@ namespace Destructible2D
             defensivePower = newDef;
         }
 
-        public void InitializeDestructible(GV.MaterialType _matType, DestructibleInterface _DI, bool _isDynamic)
+        public void InitializeDestructible(DestructibleInterface _DI, bool _isDynamic)
         {//this destructible allows the setting of defensive power dynamically (energy value changing callers)
             isDynamic = _isDynamic;
-            matType = _matType; 
-            if (!isDynamic)
-                defensivePower = MaterialDict.Instance.GetStampValue(matType, false, _DI.GetEnergy(), _DI.GetDensityEffect()); //if not dynamic (energy/defense doesnt change) then just calculate here once
+            defensivePower = GV.STAMP_SPELL_BASE_DEFENSE;
             DI = _DI; //makes the link to energy/solidMaterial to call things like fracture or get energy
         }
 
@@ -659,7 +656,7 @@ namespace Destructible2D
 				}
 				else
 				{
-                    defensivePower = (isDynamic) ? MaterialDict.Instance.GetStampValue(matType, false, DI.GetEnergy(), DI.GetDensityEffect()) : defensivePower;
+                    defensivePower = (isDynamic) ? GV.EXPLOSION_STAMP*DI.GetEnergy() : defensivePower;
 					for (var y = rect.MinY; y < rect.MaxY; y++)
 					{
 						var v = y * alphaPixelY + alphaHalfPixelY;

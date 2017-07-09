@@ -34,17 +34,17 @@ public class SpellAnimationLibrary
 
     public void GetAllDestabilizationAnimators()
     {
-        animatorFiles = System.IO.Directory.GetFiles("Assets/Hasdra/Resources/Animations/DestabilizationAnimations", "*.controller");
+        animatorFiles = System.IO.Directory.GetFiles("Assets/Resources/Animations/DestabilizationAnimations", "*.controller");
     }
 
-    public GameObject LoadRandomAnimator(GV.MaterialType matType)
+    public GameObject LoadRandomAnimator()
     {
         if (animatorFiles == null)
             GetAllDestabilizationAnimators();
         int toLoad = Random.Range(0, animatorFiles.Length);
         GameObject OCObject = MonoBehaviour.Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/Spell/OC_Animations/OC"));
         OCObject.GetComponent<Animator>().runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animations/DestabilizationAnimations/" + System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileName(animatorFiles[toLoad])));
-        OCObject.GetComponent<SpriteRenderer>().color = GV.MaterialBasicColor(matType);
+        //OCObject.GetComponent<SpriteRenderer>().color = GV.MaterialBasicColor(matType);
         return OCObject;
     }
 
@@ -58,22 +58,22 @@ public class SpellAnimationLibrary
     
 #endregion
 
-    public ParticleSystem GetDebrisGatherAnimation(GV.MaterialType matType)
+    public ParticleSystem GetDebrisGatherAnimation(GV.SpellForms spellForm)
     {
         GameObject debrisGatherAnim = MonoBehaviour.Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/Spell/ParticleEffects/DebrisCharge"));
         ParticleSystem partSys = debrisGatherAnim.GetComponent<ParticleSystem>();
         Renderer render = partSys.GetComponent<Renderer>();
-        render.material = Resources.Load("Textures/Spells/Gathering Debris Materials/" + matType.ToString().ToLower() + "Particle", typeof(Material)) as Material;
+        render.material = Resources.Load("Textures/Spells/Gathering Debris Materials/" + spellForm + "Particle", typeof(Material)) as Material;
         //Debug.Log("debris animation fake made for: " + matType);
         return partSys;
     }
 
-    public ParticleSystem GetExplosionAnimation(GV.MaterialType matType)
+    public ParticleSystem GetExplosionAnimation(GV.SpellForms spellForm)
     {
         GameObject debrisGatherAnim = MonoBehaviour.Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/Spell/ParticleEffects/CircleEmit"));
         ParticleSystem partSys = debrisGatherAnim.GetComponent<ParticleSystem>();
         Renderer render = partSys.GetComponent<Renderer>();
-        render.material = Resources.Load("Textures/Spells/Gathering Debris Materials/" + matType.ToString().ToLower() + "Particle", typeof(Material)) as Material;
+        render.material = Resources.Load("Textures/Spells/Gathering Debris Materials/" + spellForm + "Particle", typeof(Material)) as Material;
         //Debug.Log("debris animation fake made for: " + matType);
         return partSys;
     }

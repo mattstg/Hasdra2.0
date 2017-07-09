@@ -12,7 +12,7 @@ public class Habitat : MonoBehaviour {
     public void Start()
     {
         string habitatAudio = "Audio/Habitat/" + habitatName;
-        if (File.Exists("Assets/Hasdra/Resources/" + habitatAudio + ".wav"))
+        if (File.Exists("Assets/Resources/" + habitatAudio + ".wav"))
         {
             audioManager = gameObject.AddComponent<AudioManager>();
             audioManager.Initialize();
@@ -20,7 +20,7 @@ public class Habitat : MonoBehaviour {
         }
         else
         {
-            Debug.Log("Assets/Hasdra/Resources/" + habitatAudio + ".wav does not exist");
+            Debug.Log("Assets/Resources/" + habitatAudio + ".wav does not exist");
         }
 
     }

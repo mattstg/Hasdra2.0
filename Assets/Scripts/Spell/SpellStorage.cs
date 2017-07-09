@@ -8,7 +8,7 @@ public class SpellStorage{
     public SpellStateMachine stateMachine;
     public State startState;
     public SpellInfo spellInfo;
-    public GV.MaterialType materialType;
+    public GV.SpellForms spellForm; //why isnt this in spellinfo?
     public List<SkillModSS> onChargeSkillMods;
     public string name;
 

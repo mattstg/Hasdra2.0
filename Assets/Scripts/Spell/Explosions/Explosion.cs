@@ -8,7 +8,7 @@ public class Explosion : MonoBehaviour {
     
     private float initialEnergy;
     protected float energy;
-    public GV.MaterialType materialType;
+    public GV.SpellForms spellForm;
     float explosionDirection; //only used when ExplosionType == Vector
     float countdown;
     float startCountdown = 9f;  //The time it takes to dissapate the explosion, could be variable or GV
@@ -51,12 +51,12 @@ public class Explosion : MonoBehaviour {
         cappedExplosiveForce = si.cappedExplosiveForce;
         dmgDirTrueAng = si.dmgDirTrueAng;
         initialEnergy = energy = _energy;
-        startCountdown = MaterialDict.Instance.GetExplosionTime(si.materialType);
+        startCountdown = GV.EXPLOSION_START_TIME;
         countdown = startCountdown = GV.EXPLOSION_DISSIPATE_VISUAL_TIME_KM.x + GV.EXPLOSION_DISSIPATE_VISUAL_TIME_KM.y * energy; ;
         explosionDirection = (explosionType == GV.DirectionalDamage.specifiedDir) ? dmgDirTrueAng : si.currentAngle;
-        materialType = si.materialType;
+        spellForm = si.spellForm;
         storedSkillModifiers = _storedSkillModifiers;
-        string explosionSprite = "Textures/Spells/Explosions/" + si.materialType.ToString() + "Explosion";
+        string explosionSprite = "Textures/Spells/Explosions/" + si.spellForm.ToString() + "Explosion";
         try
         {
             GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(explosionSprite);
@@ -68,7 +68,7 @@ public class Explosion : MonoBehaviour {
         }
         ScaleSize();
         //Debug.Log("explosion mat type: " + _materialType + " at e: " + _energy + " returned stamp power: " + MaterialDict.Instance.GetStampValue(_materialType, true, _energy));
-        GetComponent<Destructible2D.D2dExplosion>().StampHardness = MaterialDict.Instance.GetStampValue(si.materialType, true, _energy, density); // *density;
+        GetComponent<Destructible2D.D2dExplosion>().StampHardness = GV.EXPLOSION_STAMP * _energy; // *density;
         //add the numeric display
         if(!GV.ND_ON)
             StaticReferences.numericTextManager.CreateDisposableNumericDisplay(Color.red,"",energy, this.transform);
@@ -88,14 +88,14 @@ public class Explosion : MonoBehaviour {
     public void ScaleSize()
     {
         float scaleSize = initialEnergy + initialEnergy * explosionDissipationGrowth * (1 - (countdown / startCountdown));
-        transform.localScale = GV.CircleScale(scaleSize, density, materialType);
+        transform.localScale = GV.CircleScale(scaleSize, density);
         d2dExplosion.StampSize.x = transform.localScale.x;
         d2dExplosion.StampSize.y = transform.localScale.y;
     }
 
-    public float GetAbsorbed(float totalEnergyOfConsumer, GV.MaterialType materialDevouring)
+    public float GetAbsorbed(float totalEnergyOfConsumer)
     {  //get absorbed by other spells
-     float energyLosing = totalEnergyOfConsumer * Time.deltaTime * MaterialDict.Instance.GetAbsorbtionResitance(materialType, materialDevouring);
+     float energyLosing = totalEnergyOfConsumer * Time.deltaTime * GV.SPELL_ABSORB_OTHER;
      energyLosing = (energyLosing > energy) ? energy : energyLosing;
      energy -= energyLosing;
      return energyLosing;
@@ -155,7 +155,7 @@ public class Explosion : MonoBehaviour {
             bool applySpecialTreament = (casterSpecailTreatment && caster == otherObj);
             PlayerControlScript pcs = otherObj.GetComponent<PlayerControlScript>();
 			if (!applySpecialTreament || damageEffectsCaster) {
-				pcs.TakeDamage (energy * Time.fixedDeltaTime, materialType);
+				pcs.TakeDamage (energy * Time.fixedDeltaTime);
 				//Debug.Log ("hereexplo");
 			}
             if (!applySpecialTreament || forceEffectsCaster)
@@ -164,17 +164,17 @@ public class Explosion : MonoBehaviour {
                 //if (!useDefaultForce)
                 //    energyUsing = Mathf.Min(energy, cappedExplosiveForce / MaterialDict.Instance.GetKnockback(materialType));
                 Debug.Log(string.Format("energy in spell {0}, but acting like {1} for knockback", energy, cappedExplosiveForce));
-                pcs.KnockBackFromDamage(energyUsing * Time.deltaTime, damageDirection, materialType, true);
+                pcs.KnockBackFromDamage(energyUsing * Time.deltaTime, damageDirection, true);
             }
             if (!applySpecialTreament || skillModsEffectsCaster)
                 foreach (SkillModifier skillmod in storedSkillModifiers)
                     pcs.AddSkillModifier(skillmod);
         }
-        else if (!interactedWithEnviro && otherObj.CompareTag("Enviroment"))
-        {
-            otherObj.GetComponent<Biome>().TakeExplosionDamage(materialType, energy); //dont multiple by delta time, assume it as if the explosion hits the enviro with full force to save on overtime calcs
-            interactedWithEnviro = true;  //this means it will only hit one enviroment even if covers multiple
-        }
+        //else if (!interactedWithEnviro && otherObj.CompareTag("Enviroment"))
+        //{
+        //    otherObj.GetComponent<Biome>().TakeExplosionDamage(energy); //dont multiple by delta time, assume it as if the explosion hits the enviro with full force to save on overtime calcs
+        //    interactedWithEnviro = true;  //this means it will only hit one enviroment even if covers multiple
+        //}
         else if (otherObj.CompareTag("Spell"))
         {
             Spell otherSpell = otherObj.GetComponent<Spell>();
@@ -182,15 +182,14 @@ public class Explosion : MonoBehaviour {
             bool applySpecialTreament = (casterSpecailTreatment && caster == otherObj);
             SpellInfo otherSpellInfo = otherSpell.spellInfo;
             if (!applySpecialTreament || damageEffectsCaster)
-                otherSpell.Absorb(GetAbsorbed(otherSpellInfo.currentEnergy, otherSpellInfo.materialType), materialType, 0, otherSpell.CoresTouching(transform), GV.BasicColiType.Explosion,true);
+                otherSpell.Absorb(GetAbsorbed(otherSpellInfo.currentEnergy), 0, otherSpell.CoresTouching(transform), GV.BasicColiType.Explosion,true);
             if (!applySpecialTreament || forceEffectsCaster)
             {
                 Vector2 dmgDir = GV.GetDamageDirection(transform.position, explosionType, explosionDirection, otherSpell.transform.position);
                 //Debug.Log(string.Format("{0} explosion pushing spell @ dmgDir({1}) with {2} energy", materialType, dmgDir, energy * Time.deltaTime * density));
-                otherSpell.TakeKnockBackDamage(dmgDir, energy * Time.deltaTime * density, materialType);
+                otherSpell.TakeKnockBackDamage(dmgDir, energy * Time.deltaTime * density);
             }
             otherSpellInfo.lastBasicColiType = GV.BasicColiType.Explosion;
-            otherSpellInfo.lastMaterialColiType = materialType;
             if (radioFreq != -1)
                 otherSpell.spellInfo.lastRadioFreqRecieved = radioFreq;
         }

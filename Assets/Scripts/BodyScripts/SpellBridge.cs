@@ -132,7 +132,7 @@ public class SpellBridge : MonoBehaviour {
 
         bool willFire = false;
         //transfer energy and return excess, but alter fire mode as well
-        float energyLossFromEfficency = energyToChargingSpell * MaterialDict.Instance.GetEnergyConversion(currentSpell.spellInfo.materialType) * spellBridgeParent.bodyStats.getSkillValue("energyUseEfficiency"); //Int Bodystats probably one level up
+        float energyLossFromEfficency = energyToChargingSpell * spellBridgeParent.bodyStats.getSkillValue("energyUseEfficiency"); //Int Bodystats probably one level up
         float energyLossFromMelee = EnergyLossFromMeleeCharge(energyToChargingSpell - energyLossFromEfficency);
         float energyPassing = energyToChargingSpell - energyLossFromEfficency - energyLossFromMelee;
         //Debug.Log(string.Format("EnergyIn: {0}, EnergyLossFromEfficency(mat & player): {1}, energyLossFromMelee: {2}, energy passing in total to spell charge {3}",energyToChargingSpell,energyLossFromEfficency,energyLossFromMelee,energyPassing));
@@ -307,10 +307,6 @@ public class SpellBridge : MonoBehaviour {
         else if (isSelfCast)
         {
             spellBridgeParent.spellChargeLocation = spellBridgeParent.selfCastChargeLocation;
-        }
-        else if(currentSpell.spellInfo.materialType == GV.MaterialType.Charisma)
-        {
-            spellBridgeParent.spellChargeLocation = spellBridgeParent.headChargeLocation;
         }
         else
         {

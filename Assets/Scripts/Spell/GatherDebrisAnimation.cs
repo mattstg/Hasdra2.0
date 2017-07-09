@@ -53,7 +53,7 @@ public class GatherDebrisAnimation : SpellAnimInterface{
 
     private void ActivateGatherAnimation()
     {
-        particleSys = SpellAnimationLibrary.Instance.GetDebrisGatherAnimation(spellInfo.materialType);
+        particleSys = SpellAnimationLibrary.Instance.GetDebrisGatherAnimation(spellInfo.spellForm);
         particleSys.transform.SetParent(parentTransform);
         particleSys.transform.localScale = new Vector3(1, 1, 1);
         particleSys.transform.localPosition = new Vector3(0, 0, 0);

@@ -27,7 +27,6 @@ public class SolidMaterialCollision : MonoBehaviour {
 
     private void ResolveCollision(Collider2D coli)
     {
-		
         PlayerControlScript pcs = coli.GetComponent<PlayerControlScript>();
         SolidMaterial sm = coli.GetComponent<SolidMaterial>();
         if (pcs)
@@ -40,7 +39,7 @@ public class SolidMaterialCollision : MonoBehaviour {
 
             //float dmg = spellInfo.mass * (pcs.GetComponent<Rigidbody2D>().velocity - GetComponent<Rigidbody2D>().velocity).magnitude * Time.deltaTime * GV.SOLIDMATERIAL_PHYSICAL_MOMENTUEM_DAMAGE_MULTIPLIER;  //copied from Spell, more and more the similarities.. to be expected, but a final solution is needed
             float dmg = DealDamage(pcs.GetComponent<Rigidbody2D>().velocity);
-            float dmgdealt = pcs.TakeDamage(dmg, spellInfo.materialType);
+            float dmgdealt = pcs.TakeDamage(dmg);
 			//Debug.Log ("dmg = " + dmg);
             //Debug.Log("dmgdealt: " + dmgdealt);
             //Debug.Log("dmg sent to player from SMC: " + dmg + ", dmg taken by player: " + dmgdealt);

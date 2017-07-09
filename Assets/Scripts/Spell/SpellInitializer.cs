@@ -8,86 +8,37 @@ public class SpellInitializer : MonoBehaviour {
 
     public void InitializeSpell(SpellStorage toClone, SpellBridge parentCaster)
     {
-        Spell newSpell = null;
         //this will be like a giant switch case
-        switch(toClone.materialType)//MaterialType
-        {
-            case GV.MaterialType.Energy:
-                newSpell = this.gameObject.AddComponent<EnergySpell>();
-                break;
-            case GV.MaterialType.Rock:
-                newSpell = this.gameObject.AddComponent<RockSpell>();
-                break;
-            case GV.MaterialType.Fire:
-                newSpell = this.gameObject.AddComponent<FireSpell>();
-                break;
-            case GV.MaterialType.Charisma:
-                newSpell = this.gameObject.AddComponent<CharismaSpell>();
-                break;
-            case GV.MaterialType.Force:
-                newSpell = this.gameObject.AddComponent<ForceSpell>();
-                break;
-            case GV.MaterialType.Higgs:
-                newSpell = this.gameObject.AddComponent<HiggsSpell>();
-                break;
-            case GV.MaterialType.Ice:
-                newSpell = this.gameObject.AddComponent<IceSpell>();
-                break;
-            case GV.MaterialType.Lighting:
-                newSpell = this.gameObject.AddComponent<LightingSpell>();
-                break;
-            case GV.MaterialType.Mist:
-                newSpell = this.gameObject.AddComponent<MistSpell>();
-                break;
-            case GV.MaterialType.Nature:
-                newSpell = this.gameObject.AddComponent<NatureSpell>();
-                break;
-            case GV.MaterialType.Oil:
-                newSpell = this.gameObject.AddComponent<OilSpell>();
-                break;
-            case GV.MaterialType.Radio:
-                newSpell = this.gameObject.AddComponent<RadioSpell>();
-                break;
-            case GV.MaterialType.Smoke:
-                newSpell = this.gameObject.AddComponent<SmokeSpell>();
-                break;
-            case GV.MaterialType.Water:
-                newSpell = this.gameObject.AddComponent<WaterSpell>();
-                break;
-            default:
-                newSpell = this.gameObject.AddComponent<EnergySpell>(); //defaults to energy
-                Debug.LogError("Unrecgonized spell type: " + toClone.materialType.ToString());
-                break;
-        }
         //!!!!!!!!this below will overrite the shape anyways!!!!!!!!!
         //RuntimeAnimatorController spellLiveAnimations = Resources.Load<RuntimeAnimatorController>("Textures/Spells/SpellAnimRuntimeControllers/" + toClone.materialType.ToString() + "AnimCntrl");
-       /* RuntimeAnimatorController spellLiveAnimations = Resources.Load<RuntimeAnimatorController>("Textures/Spells/PixelMode/" + toClone.spellInfo.spellShape + "/" +  toClone.materialType.ToString() + "AnimCntrl");
-        if (spellLiveAnimations) //if one exist, there is a live sprite version of the spell, instead of a static sprite
-        {
-           newSpell.gameObject.AddComponent<Animator>().runtimeAnimatorController = spellLiveAnimations;
-        }*/
+        /* RuntimeAnimatorController spellLiveAnimations = Resources.Load<RuntimeAnimatorController>("Textures/Spells/PixelMode/" + toClone.spellInfo.spellShape + "/" +  toClone.materialType.ToString() + "AnimCntrl");
+         if (spellLiveAnimations) //if one exist, there is a live sprite version of the spell, instead of a static sprite
+         {
+            newSpell.gameObject.AddComponent<Animator>().runtimeAnimatorController = spellLiveAnimations;
+         }*/
+        Spell newSpell = this.gameObject.AddComponent<Spell>();
         newSpell.spellInfo = new SpellInfo(toClone.spellInfo);
-        newSpell.spellInfo.materialType = toClone.materialType;
+        newSpell.spellInfo.spellForm = toClone.spellForm;
         newSpell.spellStateMachine = toClone.stateMachine;
         newSpell.spellInfo.currentState = toClone.startState;
         SetupChargingSkillMods(newSpell, toClone);
         //newSpell.InitializeSpellCore(toClone.spellInfo.shape);
         //GRAVITY getGravity materailDict, fix float first
-        newSpell.GetComponent<Rigidbody2D>().gravityScale = newSpell.spellInfo.gravityScale = MaterialDict.Instance.GetGravity(newSpell.spellInfo.materialType);
+        newSpell.GetComponent<Rigidbody2D>().gravityScale = newSpell.spellInfo.gravityScale = 1;
         SetupSpriteAndMass(newSpell);
         //newSpell.SetSizeMassSpriteShape();
         Destroy(this);//was here
         
-        if (GV.GetSpellFormByMaterialType(newSpell.spellInfo.materialType) == GV.SpellForms.Physical)
+        if (newSpell.spellInfo.spellForm == GV.SpellForms.Physical)
         {
             gameObject.AddComponent<Destructible2D.D2dPolygonCollider>();
             Destructible2D.D2dDestructible destr = GetComponent<Destructible2D.D2dDestructible>();
-            destr.InitializeDestructible(newSpell.spellInfo.materialType, newSpell, true);
+            destr.InitializeDestructible(newSpell, true);
             destr.AutoSplit = Destructible2D.D2dDestructible.SplitType.Whole;
             destr.FeatherSplit = false;
             destr.MinSplitPixels = 0;
-            if(!newSpell.spellInfo.colorAltered)
-                newSpell.spellInfo.spellColor = MaterialDict.Instance.GetMaterialSpriteStyle(newSpell.spellInfo.materialType).color;
+            if (!newSpell.spellInfo.colorAltered)
+                newSpell.spellInfo.spellColor = new Color(1, 1, 1); // MaterialDict.Instance.GetMaterialSpriteStyle(newSpell.spellInfo.materialType).color;
             destr.Color = newSpell.spellInfo.spellColor;
             /*for (int i = 0; i < GV.SPELL_PIXEL_OPTIMZATION; i++)
             {
@@ -158,7 +109,8 @@ public class SpellInitializer : MonoBehaviour {
 
     private void SetupSpriteAndMass(Spell toSet)
     {
-        MaterialDict.MaterialSpriteStyle matSpriteStyle = MaterialDict.Instance.GetMaterialSpriteStyle(toSet.spellInfo.materialType);
+        GV.SpriteStyle spriteStyle = (toSet.spellInfo.spellForm == GV.SpellForms.Physical) ? GV.SpriteStyle.Solid : GV.SpriteStyle.Gas;
+        MaterialSpriteStyle matSpriteStyle = new MaterialSpriteStyle(new Color(1,1,1), spriteStyle); // MaterialDict.Instance.GetMaterialSpriteStyle(toSet.spellInfo.materialType);
         if (toSet.spellInfo.spellForm == GV.SpellForms.Energy)
         {
             bool sucessful = LoadAnimatedSprite(toSet, matSpriteStyle);
@@ -176,7 +128,7 @@ public class SpellInitializer : MonoBehaviour {
         toSet.SetSizeAndMass();
     }
 
-    private bool LoadAnimatedSprite(Spell toSet, MaterialDict.MaterialSpriteStyle matSpriteStyle)
+    private bool LoadAnimatedSprite(Spell toSet, MaterialSpriteStyle matSpriteStyle)
     {
         string animatorLocation = "Textures/Spells/Animators/" + matSpriteStyle.spriteStyle.ToString() + toSet.spellInfo.spellShape + "_0";
         RuntimeAnimatorController spellLiveAnimations = Resources.Load<RuntimeAnimatorController>(animatorLocation);
@@ -188,7 +140,7 @@ public class SpellInitializer : MonoBehaviour {
         return true;
     }
 
-    private void LoadStaticSprite(Spell toSet, MaterialDict.MaterialSpriteStyle matSpriteStyle)
+    private void LoadStaticSprite(Spell toSet, MaterialSpriteStyle matSpriteStyle)
     {
         string spriteLoc = "Textures/Spells/Static/Static" + matSpriteStyle.spriteStyle.ToString() + toSet.spellInfo.spellShape;
         Sprite s = Resources.Load<Sprite>(spriteLoc);

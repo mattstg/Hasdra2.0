@@ -9,7 +9,7 @@ public class ParticleController : MonoBehaviour {
     
     public List<ParticleSystem> particleSystems;
     //public ParticleCollisionEvent[] collisionEvents;
-    public GV.MaterialType particleMaterial = GV.MaterialType.Energy; //Must be set by making obj
+    public GV.SpellForms particleMaterial = GV.SpellForms.Energy; //Must be set by making obj
 
     public void BurstToDeath(float _energy, GV.DirectionalDamage explosionType)
     {
@@ -34,11 +34,11 @@ public class ParticleController : MonoBehaviour {
         }
     }
 
-    public void SetParticleMaterial(GV.MaterialType matType)
+    public void SetParticleMaterial(GV.SpellForms spellForm)
     {
-        particleMaterial = matType;
+        particleMaterial = spellForm;
         Renderer render = particleSystems[0].GetComponent<Renderer>();
-        render.material = Resources.Load("Textures/Spells/Materials/" + matType.ToString().ToLower() + "Particle", typeof(Material)) as Material;
+        render.material = Resources.Load("Textures/Spells/Materials/" + spellForm.ToString().ToLower() + "Particle", typeof(Material)) as Material;
     }
 
     public void BurstInDirection(float _energy)

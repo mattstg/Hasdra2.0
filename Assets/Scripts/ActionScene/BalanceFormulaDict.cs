@@ -36,6 +36,7 @@ public class BalanceFormulaDict
         balanceBook.Add("maximumEnergy", new BasicBF(4f, 6));
         balanceBook.Add("spellChargeRadio", new BasicBF(.33f, 0)); //How fast you can spend energy to charge a spell radio
 
+        balanceBook.Add("dmgResist", new AssStorage(30, .2f, 1f, 30, GV.HorzAsym.MaxToMin)); //all resistances follow from this
         balanceBook.Add("resistance", new AssStorage(30, .2f, .95f, 30, GV.HorzAsym.MaxToMin)); //all resistances follow from this
 
         balanceBook.Add("hpRegenRate", new BasicBF(.1f, .5f));

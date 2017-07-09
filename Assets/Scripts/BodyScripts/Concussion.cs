@@ -64,11 +64,11 @@ public class Concussion{
         bs.pcs.ToggleInputMap(true);
     }
 
-    public void RecieveDamage(float dmgAmt, GV.DamageTypes dmgType)
+    public void RecieveDamage(float dmgAmt)
     {
         //already took dmg at this point, so 0 hp is feasible
         //1 hp dmg = 1 concuss, if 0 hp, full concuss recieved
-        float totalConcussRecieved = dmgAmt * bs.getSkillValue("resistConcusion") * MaterialDict.Instance.GetConcussBonus(dmgType);
+        float totalConcussRecieved = dmgAmt * bs.getSkillValue("resistConcusion");
         if (!resistingFurtherConcuss)
         {
             //Debug.Log(string.Format("Recieved raw {0} concuss, resistance: {1}", concussForceRecieved, bs.getSkillValue("resistConcusion")));

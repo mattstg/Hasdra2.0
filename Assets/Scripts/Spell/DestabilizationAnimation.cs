@@ -30,7 +30,7 @@ public class DestabilizationAnimation : SpellAnimInterface {
             {
                 if (desiredActiveAnim > activeAnimations)
                 { //add an animation
-                    GameObject newAnimationChild = SpellAnimationLibrary.Instance.LoadRandomAnimator(spellInfo.materialType);
+                    GameObject newAnimationChild = SpellAnimationLibrary.Instance.LoadRandomAnimator();
                     newAnimationChild.transform.SetParent(parentTransform);
                     float scaleDif = Random.Range(GV.UNSTABLE_SIZRANGE.x, GV.UNSTABLE_SIZRANGE.y);
                     newAnimationChild.transform.localPosition = new Vector3(0, 0, 0);

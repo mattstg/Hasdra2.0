@@ -67,8 +67,6 @@ public class SpellInfoRelativeManager  {
                     return (T)System.Convert.ChangeType(true, typeof(T));
                 case GV.SpellInfoDataType.BasicColiType:
                     return (T)System.Convert.ChangeType(si.lastBasicColiType, typeof(T));
-                case GV.SpellInfoDataType.SpellColiType:
-                    return (T)System.Convert.ChangeType(si.lastMaterialColiType, typeof(T)); 
                 case GV.SpellInfoDataType.Density:
                     return (T)System.Convert.ChangeType(si.density, typeof(T));
                 case GV.SpellInfoDataType.Angle:

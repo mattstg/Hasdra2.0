@@ -31,12 +31,6 @@ public class MagicButtons : MonoBehaviour {
         {
             GV.worldUI.menuManager.OpenMenu(GV.MenuType.stats);
         }
-        if (Input.GetKeyDown(KeyCode.PageDown))
-        {
-            Debug.Log("Concusion test mode active, energy now deals concusive, concusion threshold lowered to 1");
-            MaterialDict.Instance.DEBUG_TurnEnergyConcusive();
-            GV.CONCUSION_KNOCKOUT_THRESHOLD = 1f;
-        }
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.D))
         {
             GV.worldUI.debugMenu.gameObject.SetActive(!GV.worldUI.debugMenu.gameObject.activeInHierarchy);
@@ -78,14 +72,6 @@ public class MagicButtons : MonoBehaviour {
         if(Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.M))
         {
             GV.ND_ON = !GV.ND_ON;
-        }
-
-        if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftShift))
-        {
-            SpellInfo spellInfo = new SpellInfo();
-            spellInfo.currentEnergy = 20;
-            spellInfo.materialType = GV.MaterialType.Energy;
-            HairlineSplitterFactory.Instance.CreateHairline(spellInfo, Camera.main.ScreenToWorldPoint(Input.mousePosition), new Vector2(0, -1));
         }
 	}
 

@@ -110,7 +110,7 @@ public class LiveSpellDict : MonoBehaviour {
         StateSlot startState = treeTracker.GetStartStateSlot();
         SpellStorage toReturn = new SpellStorage();
         toReturn.onChargeSkillMods = skillModSS;
-        toReturn.materialType = startState.ssDict["Material_Type"].CastValue<GV.MaterialType>();
+        toReturn.spellForm = startState.ssDict["SpellForm_Type"].CastValue<GV.SpellForms>();
         toReturn.startState = treeTracker.GetStartState();
         toReturn.stateMachine = new SpellStateMachine(treeTracker);
         toReturn.name = name;

@@ -52,11 +52,11 @@ public class TransSlotStructGUI : MonoBehaviour {
             EnumInput.value = (int)slotstruct.basicColiType;
             EnumInput.RefreshShownValue();
         }
-        else if (slotstruct.SIDT == GV.SpellInfoDataType.SpellColiType)
-        {
-            EnumInput.value = (int)slotstruct.spellColiType;
-            EnumInput.RefreshShownValue();
-        }
+       // else if (slotstruct.SIDT == GV.SpellInfoDataType.SpellColiType)
+       // {
+       //     EnumInput.value = (int)slotstruct.spellColiType;
+       //     EnumInput.RefreshShownValue();
+       // }
     }
 
     private void LoadInputBox()
@@ -75,10 +75,10 @@ public class TransSlotStructGUI : MonoBehaviour {
                 FeildCInput.gameObject.SetActive(true);
                 FeildCInput.contentType = InputField.ContentType.DecimalNumber;
                 break;
-            case GV.VarType.SpellType:
-                EnumInput.gameObject.SetActive(true);
-                FillSpellColiTypeEnumDropdown();
-                break;
+            //case GV.VarType.SpellType:
+            //    EnumInput.gameObject.SetActive(true);
+            //    FillSpellColiTypeEnumDropdown();
+            //    break;
             case GV.VarType.BasicColiType:
                 EnumInput.gameObject.SetActive(true);
                 FillBasicColiTypeEnumDropdown();
@@ -111,8 +111,8 @@ public class TransSlotStructGUI : MonoBehaviour {
         slotstruct.strValue = FeildCInput.text;
         if ((GV.SpellInfoDataType)SIDTChoice.value == GV.SpellInfoDataType.BasicColiType)
             slotstruct.basicColiType = (GV.BasicColiType)EnumInput.value;
-        if ((GV.SpellInfoDataType)SIDTChoice.value == GV.SpellInfoDataType.SpellColiType)
-            slotstruct.spellColiType = (GV.MaterialType)EnumInput.value;
+        //if ((GV.SpellInfoDataType)SIDTChoice.value == GV.SpellInfoDataType.SpellColiType)
+        //    slotstruct.spellColiType = (GV.MaterialType)EnumInput.value;
 
     }
 
@@ -135,14 +135,14 @@ public class TransSlotStructGUI : MonoBehaviour {
         }
     }
 
-    private void FillSpellColiTypeEnumDropdown()
-    {
-        EnumInput.ClearOptions();
-        foreach (GV.MaterialType SIDT in System.Enum.GetValues(typeof(GV.MaterialType)))
-        {
-            EnumInput.options.Add(new Dropdown.OptionData(SIDT.ToString()));
-        }
-    }
+    //private void FillSpellColiTypeEnumDropdown()
+    //{
+    //    EnumInput.ClearOptions();
+    //    foreach (GV.MaterialType SIDT in System.Enum.GetValues(typeof(GV.MaterialType)))
+    //    {
+    //        EnumInput.options.Add(new Dropdown.OptionData(SIDT.ToString()));
+    //    }
+    //}
 
     private void FillDropdowns(GV.SpellInfoDataType loadDropdownsForType)
     {

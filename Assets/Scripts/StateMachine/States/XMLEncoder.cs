@@ -153,17 +153,17 @@ public class XMLEncoder {
         switch(fileLoc)
         {
             case GV.fileLocationType.Spells:
-                return "Assets/Hasdra/XMLs/Spells";
+                return "Assets/XMLs/Spells";
             case GV.fileLocationType.Characters:
-                return "Assets/Hasdra/XMLs/Levels";
+                return "Assets/XMLs/Levels";
             case GV.fileLocationType.Trees:
-                return "Assets/Hasdra/XMLs/Nature";
+                return "Assets/XMLs/Nature";
             case GV.fileLocationType.Xml:
-                return "Assets/Hasdra/XMLs";
+                return "Assets/XMLs";
             case GV.fileLocationType.NPCs:
-                return "Assets/Hasdra/XMLs/NPCs";
+                return "Assets/XMLs/NPCs";
             case GV.fileLocationType.TagManagers:
-                return "Assets/Hasdra/XMLs/TagManagers";
+                return "Assets/XMLs/TagManagers";
             default:
                 Debug.LogError("unhandled file type location, please add case");
                 return "";

@@ -57,10 +57,10 @@ public class AudioManager : MonoBehaviour {
         if (!GV.AUDIO)
             return;
 
-        List<string> fileNames = XMLEncoder.GetAllFilesInPath("Assets/Hasdra/Resources/Audio/" + folderPath);
+        List<string> fileNames = XMLEncoder.GetAllFilesInPath("Assets/Resources/Audio/" + folderPath);
         if(fileNames.Count == 0)
         {
-            Debug.Log("no audio " + "Assets/Hasdra/Resources/Audio/" + folderPath);
+            Debug.Log("no audio " + "Assets/Resources/Audio/" + folderPath);
             return;
         }
         int rando = Random.Range(0, fileNames.Count);

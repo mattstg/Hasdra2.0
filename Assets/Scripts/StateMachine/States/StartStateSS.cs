@@ -19,7 +19,7 @@ public class StartStateSS : StateSlot {
 
         AddSSTuple("Max_range", "2", GV.StateVarType.Float,"Cast_typeMelee");
         AddSSTuple("Min_energy_to_achieve_max_range", "5", GV.StateVarType.Float, "Cast_typeMelee");
-        AddSSTuple("Material_Type", "Energy", GV.StateVarType.MatType);
+        AddSSTuple("SpellForm_Type", "Energy", GV.StateVarType.SpellForm);
         AddSSTuple("Cast_on_charge_param", "None", GV.StateVarType.CastOnCharge, new List<string> { "Energy_limit_typeConstant", "Energy_limit_typePercentOfCasterMax" }, true);
         AddSSTuple("Initial_velocity", "0", GV.StateVarType.Float, new List<string> {"Cast_typeNormal", "Cast_typeMelee"}, true);        
         AddSSTuple("Energy_limit_type", "None", GV.StateVarType.energyLimitType);
@@ -45,7 +45,7 @@ public class StartStateSS : StateSlot {
         toRet.meleeCastType = ssDict["Melee_type"].CastValue<GV.MeleeCastType>();
         toRet.melee_maxRange = ssDict["Max_range"].CastValue<float>();
         toRet.melee_maxRange_energy = ssDict["Min_energy_to_achieve_max_range"].CastValue<float>();
-        toRet.materialType = ssDict["Material_Type"].CastValue<GV.MaterialType>();
+        toRet.spellForm = ssDict["SpellForm_Type"].CastValue<GV.SpellForms>();
         toRet.castOnChargeParam = ssDict["Cast_on_charge_param"].CastValue<GV.CastOnCharge>();
         toRet.initialLaunchVelo = ssDict["Initial_velocity"].CastValue<float>();
         toRet.energyLimitType = ssDict["Energy_limit_type"].CastValue<GV.EnergyLimitType>();

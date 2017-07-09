@@ -718,26 +718,20 @@ public class PlayerControlScript : MonoBehaviour {
 		//Debug.Log ("heredirecthitbyspell");
     }*/
 
-	public float TakeDamage(float energyAmt, GV.MaterialType materialType)
+	public float TakeDamage(float energyAmt)
     {
         if (stats.isInvunerable)
             return 0;
         //Debug.Log("took dmg: " + dmgAmount + " of type " + materialType.ToString() + " in the direction of " + directionOfDamage.ToString());
         if (energyAmt / Time.deltaTime >= .1f) //if is dealing more than .1 dmg, at this point already recieves it after dt, so need to convert to check
         {
-            float dmgToAdd = 0;
-            dmgToAdd += TakeEarthDamage( energyAmt * MaterialDict.Instance.GetDamage(GV.DamageTypes.Earth)  * MaterialDict.Instance.GetDamageDistribution(materialType, GV.DamageTypes.Earth) * stats.getResistanceValue("resistEarth"));
-            dmgToAdd += TakeEnergyDamage(energyAmt * MaterialDict.Instance.GetDamage(GV.DamageTypes.Energy) * MaterialDict.Instance.GetDamageDistribution(materialType, GV.DamageTypes.Energy) * stats.getResistanceValue("resistEnergy"));
-            dmgToAdd += TakeAirDamage(   energyAmt * MaterialDict.Instance.GetDamage(GV.DamageTypes.Air)    * MaterialDict.Instance.GetDamageDistribution(materialType, GV.DamageTypes.Air) * stats.getResistanceValue("resistAir"));
-            dmgToAdd += TakeWaterDamage( energyAmt * MaterialDict.Instance.GetDamage(GV.DamageTypes.Water)  * MaterialDict.Instance.GetDamageDistribution(materialType, GV.DamageTypes.Water) * stats.getResistanceValue("resistWater"));
-            dmgToAdd += TakeFireDamage(  energyAmt * MaterialDict.Instance.GetDamage(GV.DamageTypes.Fire)   * MaterialDict.Instance.GetDamageDistribution(materialType, GV.DamageTypes.Fire) * stats.getResistanceValue("resistFire"));
-            dmgToAdd += TakeIceDamage(   energyAmt * MaterialDict.Instance.GetDamage(GV.DamageTypes.Ice)    * MaterialDict.Instance.GetDamageDistribution(materialType, GV.DamageTypes.Ice) * stats.getResistanceValue("resistIce"));
-            dmgToAdd += TakeAetherDamage(energyAmt * MaterialDict.Instance.GetDamage(GV.DamageTypes.Aether) * MaterialDict.Instance.GetDamageDistribution(materialType, GV.DamageTypes.Aether) * stats.getResistanceValue("resistAether"));
-            dmgToAdd += TakeNatureDamage(energyAmt * MaterialDict.Instance.GetDamage(GV.DamageTypes.Nature) * MaterialDict.Instance.GetDamageDistribution(materialType, GV.DamageTypes.Nature) / stats.getResistanceValue("resistNature"));  //divide to increase effect
-            dmgToAdd += TakeManaDamage(  energyAmt * MaterialDict.Instance.GetDamage(GV.DamageTypes.Mana)   * MaterialDict.Instance.GetDamageDistribution(materialType, GV.DamageTypes.Mana) / stats.getResistanceValue("resistMana"));          //divide to increase effect
-            StaticReferences.numericTextManager.CreateNumericDisplay(this, this.transform, "dmgTaken", "", dmgToAdd, Color.red);
-            //dmgContrl.takeDmg(dmgToAdd);
-            return dmgToAdd;
+            float dmgTaken = stats.getSkillValue("dmgResist") * energyAmt;
+            StaticReferences.numericTextManager.CreateNumericDisplay(this, this.transform, "dmgTaken", "", dmgTaken, Color.red);
+            if (isBlocking)
+                dmgTaken = BlockIncomingDamage(dmgTaken);
+            stats.healthPoints -= dmgTaken;
+            stats.concussion.RecieveDamage(dmgTaken);
+            return dmgTaken;
         }
         return 0;
     }
@@ -762,20 +756,20 @@ public class PlayerControlScript : MonoBehaviour {
     }
 
     //Check this isnt too cpu intensive since recalculates the numbers in take damage
-    public void KnockBackFromDamage(float amount, Vector2 _directionOfDamage, GV.MaterialType attackingMaterial, bool relative = false)
+    public void KnockBackFromDamage(float amount, Vector2 _directionOfDamage, bool relative = false)
     {
         relative = false;
         //Energy spells being affected only
         if (!relative)
         {
             Vector2 directionOfDmg = _directionOfDamage.normalized;
-            Vector2 forceApplying = directionOfDmg * amount * MaterialDict.Instance.GetKnockback(attackingMaterial) * stats.getResistanceValue("resistKnockback");
+            Vector2 forceApplying = directionOfDmg * amount * stats.getResistanceValue("resistKnockback");
             storedForce += forceApplying;
         }
         else
         {
             Vector2 directionOfDmg = _directionOfDamage.normalized;
-            Vector2 forceApplying = directionOfDmg * amount * MaterialDict.Instance.GetKnockback(attackingMaterial) * stats.getResistanceValue("resistKnockback");
+            Vector2 forceApplying = directionOfDmg * amount * stats.getResistanceValue("resistKnockback");
             Vector2 forceApplyPerSec = forceApplying / Time.deltaTime;
 
             Vector2 curForce = currentVelo * getMassOfBody();
@@ -787,11 +781,11 @@ public class PlayerControlScript : MonoBehaviour {
         }
     }
 
-    public void FullKnockbackFromDamage(float amount, Vector2 _directionOfDamage, GV.MaterialType attackingMaterial)
+    public void FullKnockbackFromDamage(float amount, Vector2 _directionOfDamage)
     {
         //Energy spells being affected only, Amount should not include dt, for a full second of knockback dealt
         Vector2 directionOfDmg = _directionOfDamage.normalized;
-        Vector2 forceApplying = directionOfDmg * amount * MaterialDict.Instance.GetKnockback(attackingMaterial) * stats.getResistanceValue("resistKnockback");
+        Vector2 forceApplying = directionOfDmg * amount * stats.getResistanceValue("resistKnockback");
         storedForce += forceApplying;
         gameObject.GetComponent<Rigidbody2D>().AddRelativeForce(forceApplying, ForceMode2D.Impulse);
         //Debug.Log(string.Format("{0} force applying from {1} dmg of {2} type", forceApplying, amount, attackingMaterial));
@@ -811,76 +805,6 @@ public class PlayerControlScript : MonoBehaviour {
         {   
             return (Mathf.Abs(curForce) - Mathf.Abs(forceApplying)) * Mathf.Sign(curForce);  //add partial force
         }
-    }
-
-    //at the stage below, they already accounted for time and resistances
-    private float TakeEarthDamage(float amount)
-    {
-        if (isBlocking)
-            amount = BlockIncomingDamage(amount);
-        stats.healthPoints -= amount;
-        stats.concussion.RecieveDamage(amount,GV.DamageTypes.Earth);  
-        return amount;
-    }
-    private float TakeEnergyDamage(float amount)
-    {
-        if (isBlocking)
-            amount = BlockIncomingDamage(amount);
-        stats.healthPoints -= amount;
-        stats.concussion.RecieveDamage(amount, GV.DamageTypes.Energy);  
-        return amount;
-    }
-    private float TakeAirDamage(float amount)
-    {
-        if (isBlocking)
-            amount = BlockIncomingDamage(amount);
-        stats.healthPoints -= amount;
-        stats.concussion.RecieveDamage(amount, GV.DamageTypes.Air);  
-        return amount;
-    }
-    private float TakeWaterDamage(float amount)
-    {
-        if (isBlocking)
-            amount = BlockIncomingDamage(amount);
-        stats.healthPoints -= amount;
-        stats.concussion.RecieveDamage(amount, GV.DamageTypes.Water);  
-        return amount;
-    }
-    private float TakeFireDamage(float amount)
-    {
-        if (isBlocking)
-            amount = BlockIncomingDamage(amount);
-        stats.healthPoints -= amount;
-        stats.concussion.RecieveDamage(amount, GV.DamageTypes.Fire);  
-        return amount;
-    }
-    private float TakeIceDamage(float amount)
-    {
-        if (isBlocking)
-            amount = BlockIncomingDamage(amount);
-        stats.healthPoints -= amount;
-        stats.concussion.RecieveDamage(amount, GV.DamageTypes.Ice);  
-        return amount;
-    }
-    private float TakeAetherDamage(float amount)
-    {
-        if (isBlocking)
-            amount = BlockIncomingDamage(amount);
-        stats.healthPoints -= amount;
-        stats.concussion.RecieveDamage(amount, GV.DamageTypes.Aether);  
-        return amount;
-    }
-    private float TakeNatureDamage(float amount)
-    {
-        stats.healthPoints += amount;
-        stats.concussion.RecieveDamage(amount, GV.DamageTypes.Nature);  
-        return amount;
-    }
-    private float TakeManaDamage(float amount)
-    {
-        stats.energy += amount;
-        stats.concussion.RecieveDamage(amount, GV.DamageTypes.Mana);  
-        return amount;
     }
 
 	public float getMassOfBody(){

@@ -17,13 +17,12 @@ public class GV : MonoBehaviour
 
     //by default enums are ordered ints, dont need to be implicit (start at 0)
     public enum DamageTypes { Earth = 0, Energy = 1, Air = 2, Water = 3, Fire = 4, Ice = 5, Aether = 6, Nature = 7, Mana = 8}
-    public enum MaterialType { Energy = 0, Rock = 1, Force = 2, Fire = 3, Water = 4, Lighting = 5, Nature = 6, Oil = 7, Charisma = 8, Radio = 9, Ice = 10, Higgs = 11, Smoke = 12, Mist = 13, None }; //changing these values will kill shit, dont do it
     public enum BasicColiType { Spell, Player, SolidMaterial, Explosion, None}; //used for "lastColiHit" in spellinfo/state machine, make sure numbers match
     public enum SpellAnimationType { Spotlight, GatheringDebris, Unstable }
     public enum SpellState { Charging, Launched, Exploding, FinishedExplosion };
     public enum SpellForms { Energy = 0, Physical = 1 };
     public enum SpellShape { Circle, Square, Crescent, Trapezoid, Dragon };
-    public enum States { StartState, Empty, Explode, Create, Rotate, Velo, Variable, Follow, Position, VeloVector, Radio, SkillMod, DmgVelo, FaceVeloVec, Fracture, IgnoreColi, SetAlpha, SetColor, ConvertToSolidMaterial, Destroy };
+    public enum States { StartState, Empty, Explode, Create, Rotate, Velo, Variable, Follow, Position, VeloVector, Radio, SkillMod, DmgVelo, FaceVeloVec, Fracture, SetAlpha, SetColor, ConvertToSolidMaterial, Destroy };
 	public enum SkillModScalingType {forceEff, forceTime};
     public enum ConstantOrPercent { constant, percent };
     public enum DirectionalDamage { explosion, implosion, towardsFace, specifiedDir};
@@ -33,12 +32,13 @@ public class GV : MonoBehaviour
     public enum Stats { Str, Const, Agi, Wis, Int, Dex, Char }
     public enum fileLocationType { Spells, Characters, Trees, Xml, NPCs, TagManagers }
     public enum DNAType { Player, NPC }
+    enum StampType { DefenseConstant, OffenseMultiplier };
 
     //Slot structs
     public enum SpellInfoDataType {GoNext, Energy, Intelligence, Wisdom, Time, Angle, Velocity, Speed, Stability, Density, Mass, BasicColiType, SpellColiType ,Altitude, Variable, Pos, Radio, PosX, PosY};
     public enum CastOnCharge { None, Hold, CastNoRepeat, CastWithRepeat }
     public enum VarType { Float, Bool, SpellType, String, BasicColiType, Vector2 };
-    public enum StateVarType { Float, Bool, String, BasicColiType, RelativeType, ExistingSpells, MatType, Shape, Rotate, ModOPType, ModVarTime, RelativeLaunchType, IgnoreXY, SkillMod, SkillModType, constantOrPercent, damageDirectionType, castType, energyLimitType, Button, ColiMetaTypes, RadioOption, InteractionType, CastOnCharge, MeleeCastType }; //used for state machine
+    public enum StateVarType { Float, Bool, String, BasicColiType, RelativeType, ExistingSpells, SpellForm, Shape, Rotate, ModOPType, ModVarTime, RelativeLaunchType, IgnoreXY, SkillMod, SkillModType, constantOrPercent, damageDirectionType, castType, energyLimitType, Button, ColiMetaTypes, RadioOption, InteractionType, CastOnCharge, MeleeCastType }; //used for state machine
     public enum SlotDataType { boolType, floatType, stringType, operatorType };
     public enum OperatorType { equalTo, lessThan, greaterThan};
     public enum RelativeType { Normal, SpellLaunched, StateStart, World };
@@ -149,6 +149,15 @@ public class GV : MonoBehaviour
     #endregion
 
     #region energy / spell
+    //#H2.0
+    public static readonly float SPELL_KNOCKBACK_PER_ENERGY = 1f; //Multiply this by energy hit by to calculate force
+    public static readonly float SPELL_ABSORB_OTHER = .2f;        //two energy spells touch, one will absorb 20% of itself from the other spell
+    public static readonly float SPELL_DISTABILITY = 1; //4 would mean gaurenteed explosion at absorbing 25% your current energy, .25 would mean at 4x
+    public static readonly float EXPLOSION_START_TIME = 3; //Time for an explosion to happen, in seconds.
+    public static readonly float EXPLOSION_STAMP = 2; //Time for an explosion to happen, in seconds.
+    public static readonly float[] SPELL_UPKEEP = new float[] { .1f, .2f };  //percent loss per second?? { Energy = 0, Physical = 1 };
+    public static readonly float[] SPELL_FORM_WEIGHT_BASE = new float[] { .1f, 1f };  //A physical spell weighs by default N weight per energy { Energy = 0, Physical = 1 };
+
     public static readonly Vector2 SPELL_MAXMIN_SET_SCALE = new Vector2(.1f, 5); //clamped values for set scale, not allowed beyond and below
     public static readonly float HAIRLINE_SPEED_MIN = 4f; //Spells going under this speed won't cause hairline fractures. The reason for this is to prevent continous checking when rolling on sm
     public static readonly float HAIRLINE_COOLDOWN  = .16f; //how often can make a hairline, acnt do it every second else a mess
@@ -206,6 +215,7 @@ public class GV : MonoBehaviour
     public static readonly float SPELL_SSLAYER_TIMER = 1.5f;  //How long a spell summoned by a spell will be immune to it's parent after launch
 
     public static readonly bool SPELL_ART_PIXEL_MODE = true;
+    
     #region Temperatures
     public static readonly float SPELL_ENERGY_START_TEMPERATURE = 200f;
     public static readonly float SPELL_ENERGY_TEMP_PER_ENERGY = 1f;
@@ -262,20 +272,20 @@ public class GV : MonoBehaviour
     public static readonly AssStorage as_runForce = new AssStorage(200f, 280f, 1000, GV.HorzAsym.MinToMax);
 
     // //////////////////////////////////////////////////////////////   COMPLEX ASS
-    /// ///////////////////////////////////////////////////////////              @control   MIN   MAX   PERCENT   TYPE
-    public static readonly AssStorage as_energyToSpellChargeRate      = new AssStorage(100 ,    1f,  100,  50,  GV.HorzAsym.MinToMax);
-    public static readonly AssStorage as_energyChargeLossFromMaterial = new AssStorage(50,    .20f,    1,  80,  GV.HorzAsym.MaxToMin);
-    public static readonly AssStorage as_stanimaTransferToSpell       = new AssStorage(100,    1f,  100,  50,  GV.HorzAsym.MinToMax);
-    public static readonly AssStorage as_stanimaToEnergyRatio         = new AssStorage(100,     1.2f,     2.5f,  50,  GV.HorzAsym.MinToMax);
-	public static readonly AssStorage as_meleeDecayCoeff              = new AssStorage(50,     1,  2,  80,	GV.HorzAsym.MaxToMin);   //multiplier for how much faster it loses energy if melee
-    public static readonly AssStorage as_energyTransferEfficency      = new AssStorage(50 ,  .5f,    1.2f,  80,  GV.HorzAsym.MaxToMin);  //energy loss from different material types
-    public static readonly AssStorage as_energyToForce                = new AssStorage(50,    100,  500f,  80,  GV.HorzAsym.MinToMax); //
-    public static readonly AssStorage as_skillModChargeEff            = new AssStorage(10,   .85f,    1f,  90,  GV.HorzAsym.MinToMax);
-    public static readonly AssStorage as_skillModChargeRate           = new AssStorage(50 ,   .5f,   250,  50,  GV.HorzAsym.MinToMax);  //how much energy can be charged into skill mods
+    /// ///////////////////////////////////////////////////////////              @control   MIN      MAX   PERCENT   TYPE
+    public static readonly AssStorage as_energyToSpellChargeRate      = new AssStorage(100 ,   1f,    100,  50,  GV.HorzAsym.MinToMax);
+    public static readonly AssStorage as_energyChargeLossFromMaterial = new AssStorage(50,    .20f,     1,  80,  GV.HorzAsym.MaxToMin);
+    public static readonly AssStorage as_stanimaTransferToSpell       = new AssStorage(100,    1f,    100,  50,  GV.HorzAsym.MinToMax);
+    public static readonly AssStorage as_stanimaToEnergyRatio         = new AssStorage(100,    1.2f, 2.5f,  50,  GV.HorzAsym.MinToMax);
+	public static readonly AssStorage as_meleeDecayCoeff              = new AssStorage(50,     1,       2,  80,	GV.HorzAsym.MaxToMin);   //multiplier for how much faster it loses energy if melee
+    public static readonly AssStorage as_energyTransferEfficency      = new AssStorage(50 ,   .5f,   1.2f,  80,  GV.HorzAsym.MaxToMin);  //energy loss from different material types
+    public static readonly AssStorage as_energyToForce                = new AssStorage(50,    100,   500f,  80,  GV.HorzAsym.MinToMax); //
+    public static readonly AssStorage as_skillModChargeEff            = new AssStorage(10,    .85f,    1f,  90,  GV.HorzAsym.MinToMax);
+    public static readonly AssStorage as_skillModChargeRate           = new AssStorage(50 ,   .5f,    250,  50,  GV.HorzAsym.MinToMax);  //how much energy can be charged into skill mods
     //public static readonly AssStorage as_meleeRangeEff                = new AssStorage(50,   .05f,   .2f,  50,  GV.HorzAsym.MaxToMin);  //energy loss when charging a melee spell based on range calculations
-    public static readonly AssStorage as_airDragTime                  = new AssStorage(50,     1f,    2f,  50,  GV.HorzAsym.MaxToMin);  //time in air before lose mobility
-    public static readonly AssStorage as_concussRecoverSpeed          = new AssStorage(50,    .5f,     2,  50,  GV.HorzAsym.MinToMax);
-
+    public static readonly AssStorage as_airDragTime                  = new AssStorage(50,     1f,     2f,  50,  GV.HorzAsym.MaxToMin);  //time in air before lose mobility
+    public static readonly AssStorage as_concussRecoverSpeed          = new AssStorage(50,    .5f,      2,  50,  GV.HorzAsym.MinToMax);
+    public static readonly AssStorage as_dmgResist                    = new AssStorage(50,     1f,    .2f,  50,  GV.HorzAsym.MinToMax);  //dmg reduction is multiplied by incoming dmg
     public static readonly AssStorage spellSize = new AssStorage(30, 1f, 8, 10, GV.HorzAsym.MinToMax);
 
     //public static readonly AssStorage as_maximumHp = new AssStorage(50, 100, 2500, HorzAsym.MinToMax);
@@ -384,7 +394,7 @@ public class GV : MonoBehaviour
     #endregion
 
     #region FolderPaths
-    public static readonly string SKINS_BASE_FOLDER_FULL = "Assets/Hasdra/Resources/Textures/PlayerSkins";
+    public static readonly string SKINS_BASE_FOLDER_FULL = "Assets/Resources/Textures/PlayerSkins";
     public static readonly string SKINS_BASE_FOLDER_TRUNC_REZ = "Textures/PlayerSkins";
     #endregion
 
@@ -405,6 +415,8 @@ public class GV : MonoBehaviour
     public static readonly float SOLIDMATERIAL_MINPIXEL_OPTIMIZATION = 16f; //A piece cannot be shrunk once it reaches this value
 
     public static readonly float SPELL_PIXEL_OPTIMZATION = 2f; //optimize a spell N times 
+
+    public static readonly float STAMP_SPELL_BASE_DEFENSE = 1f;
     #endregion
 
     #region UI
@@ -529,34 +541,7 @@ public class GV : MonoBehaviour
         Debug.Log("1: " + spellName);
         return StaticReferences.mainScriptsGO.GetComponent<LiveSpellDict>().GetSpell(spellName);
     }
-
-    public static GV.SpellForms GetSpellFormByMaterialType(GV.MaterialType materialType)
-    {
-        switch (materialType)
-        {
-            case GV.MaterialType.Energy:
-            case GV.MaterialType.Force:
-            case GV.MaterialType.Fire:
-            case GV.MaterialType.Lighting:
-            case GV.MaterialType.Charisma:
-            case GV.MaterialType.Radio:
-            case GV.MaterialType.Mist:
-            case GV.MaterialType.Smoke:
-            case GV.MaterialType.Water:
-            case GV.MaterialType.Oil:
-            case GV.MaterialType.Nature:
-                return GV.SpellForms.Energy;
-            case GV.MaterialType.Rock:
-            case GV.MaterialType.Ice:
-            case GV.MaterialType.Higgs:
-                return GV.SpellForms.Physical;
-            default:
-                Debug.LogError("MaterialType: " + materialType.ToString() + " not recognized, defaulted to energy, please add");
-                break;
-        }
-        return GV.SpellForms.Energy;
-    }
-
+    
     public static void Destroyer(GameObject toDestroy)
     {
         StaticReferences.mainScriptsGO.GetComponent<ObjectDestroyer>().CustomDestroyObject(toDestroy);
@@ -564,11 +549,11 @@ public class GV : MonoBehaviour
             toDestroy.GetComponent<Spell>().spellBridge.parentCaster = null;
     }
 
-    public static Vector3 CircleScale(float energy, float density, GV.MaterialType materialType)
+    public static Vector3 CircleScale(float energy, float density)
     {
         if (energy>= 0)
         {
-            float radius = Mathf.Sqrt(((1 / MaterialDict.Instance.GetMaterialInfo(materialType).density) * (1 / density) * GV.ENERGY_SCALE_SIZE * energy) / Mathf.PI);
+            float radius = Mathf.Sqrt((((1 / density) * GV.ENERGY_SCALE_SIZE * energy) / Mathf.PI));
             radius = (float)System.Math.Round(radius, 2);
             return new Vector3(radius + GV.SPRITE_START_SCALE, radius + GV.SPRITE_START_SCALE,1);
         }
@@ -576,11 +561,11 @@ public class GV : MonoBehaviour
 
     }
 
-    public static Vector3 SquareScale(float energy, float density, GV.MaterialType materialType)
+    public static Vector3 SquareScale(float energy, float density)
     {
         if (energy >= 0)
         {
-            float scale = Mathf.Sqrt(((1 / MaterialDict.Instance.GetMaterialInfo(materialType).density) * (1 / density) * GV.ENERGY_SCALE_SIZE * energy));
+            float scale = Mathf.Sqrt(((1 / density) * GV.ENERGY_SCALE_SIZE * energy));
             return new Vector3(scale + GV.SPRITE_START_SCALE, scale + GV.SPRITE_START_SCALE, 1);
         }
         return new Vector3(.1f, .1f, 1);
@@ -680,43 +665,7 @@ public class GV : MonoBehaviour
         return Quaternion.Euler(0, 0, degrees) * v;
     }
 
-    public static Color MaterialBasicColor(GV.MaterialType matType)
-    {
-        switch (matType)
-        {
-            case GV.MaterialType.Charisma:
-                return Color.clear;
-            case GV.MaterialType.Energy:
-                return Color.yellow;
-            case GV.MaterialType.Fire:
-                return Color.red;
-            case GV.MaterialType.Force:
-                return Color.clear;
-            case GV.MaterialType.Higgs:
-                return Color.white;
-            case GV.MaterialType.Ice:
-                return Color.cyan;
-            case GV.MaterialType.Lighting:
-                return Color.yellow;
-            case GV.MaterialType.Mist:
-                return new Color32(32, 175, 233, 255);
-            case GV.MaterialType.Nature:
-                return Color.green;
-            case GV.MaterialType.Oil:
-                return new Color32(65, 0, 178, 255); //Dark purple
-            case GV.MaterialType.Radio:
-                return Color.clear;
-            case GV.MaterialType.Rock:
-                return new Color32(255, 90, 0, 255);
-            case GV.MaterialType.Smoke:
-                return Color.clear;
-            case GV.MaterialType.Water:
-                return Color.cyan;
-            default:
-                return Color.white;
-        }
-    }
-
+   
     // www.desmos.com/calculator
     /*
      * \frac{-1}{\frac{\left(x-1\right)}{\left(k-1\right)\left(h-l\right)}+\frac{1}{h-l}}+h

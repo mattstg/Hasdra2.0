@@ -83,8 +83,6 @@ public class SpellInfo{
     public Vector2 initialSetScale;
     public GV.CastOnCharge castOnChargeParam = GV.CastOnCharge.None;
     
-    private GV.MaterialType _materialType;
-    public GV.MaterialType materialType{set{_materialType = value;spellForm = GV.GetSpellFormByMaterialType(_materialType);} get { return _materialType;}}
     public GV.SpellForms spellForm;
     private Vector2 _setScale = new Vector2(1, 1);
     public Vector2 setScale { set { _setScale = new Vector2(Mathf.Clamp(value.x, GV.SPELL_MAXMIN_SET_SCALE.x, GV.SPELL_MAXMIN_SET_SCALE.y),Mathf.Clamp(value.y, GV.SPELL_MAXMIN_SET_SCALE.x, GV.SPELL_MAXMIN_SET_SCALE.y)); } get { return _setScale; } }
@@ -95,7 +93,6 @@ public class SpellInfo{
     public float energyInSideBank = 0; //energy in side bank gets re-added to spell next turn
     ////// Not yet initialized    
     public GV.BasicColiType lastBasicColiType = GV.BasicColiType.None;
-    public GV.MaterialType lastMaterialColiType = GV.MaterialType.None;
     public Vector2 curHeadingDir;
     public Vector2 forceStoredForVelo = new Vector2(0,0); 
     /// ///////
@@ -104,7 +101,6 @@ public class SpellInfo{
     public bool isTransforming = false;
     public bool isCreating = false;
     public List<GV.BasicColiType> ignoreMetaColiType = new List<GV.BasicColiType>();
-    public List<GV.MaterialType>  ignoreMaterialColiType = new List<GV.MaterialType>();
 
     //Energy and Mass per pixel need to be updated if Pixel,Mass or Energy changes
     public int pixelOptimizationLevel = 0; //amount of times was called "halve" or "optimize" by d2d  (not accurate or much used yet)
@@ -157,7 +153,7 @@ public class SpellInfo{
         sc_selfApplySpell     = toClone.sc_selfApplySpell;
         energyLimit = toClone.energyLimit;
         spellShape  = toClone.spellShape;
-        materialType = toClone.materialType;
+        //materialType = toClone.materialType;
         initialSetScale = setScale = new Vector2(toClone.setScale.x, toClone.setScale.y);
         melee_maxRange = toClone.melee_maxRange;
         melee_maxRange_energy = toClone.melee_maxRange_energy;
@@ -194,7 +190,7 @@ public class SpellInfo{
         initialLaunchAngleRelType = toAdd.initialLaunchAngleRelType;
         spellShape = toAdd.spellShape;
         initialSetScale = setScale = new Vector2(toAdd.setScale.x, toAdd.setScale.y);
-        materialType = toAdd.materialType;
+        spellForm = toAdd.spellForm;
         melee_maxRange = toAdd.melee_maxRange;
         melee_maxRange_energy = toAdd.melee_maxRange_energy;
 		isFacingLaunchDir = toAdd.isFacingLaunchDir;
@@ -235,7 +231,7 @@ public class SpellInfo{
 
     public float GetMass() //be sure to recalculate if any have been changed (have a dirty flag)
     {
-        return MaterialDict.Instance.GetWeightPerEnergy(materialType) * _curEnergy;
+        return GV.SPELL_FORM_WEIGHT_BASE[(int)spellForm] * _curEnergy;
         //_mass = massPerPixel*currentEnergy*density;
         //return _mass;
     }
@@ -279,7 +275,7 @@ public class SpellInfo{
     {
         SpellInfo toRet = (SpellInfo)this.MemberwiseClone();
         //Cant clone the Identifiers, so do that manually
-        toRet.materialType = materialType;
+        toRet.spellForm = spellForm;
         toRet._numOfPixels = _numOfPixels;
         toRet.currentEnergy = _curEnergy;
         toRet.mass = _mass;
@@ -323,9 +319,9 @@ public class SpellInfo{
     public void CollisionDetected(Spell otherObj)
     {
         if(otherObj.spellInfo.spellState == GV.SpellState.Exploding)
-            CollisionDetected(GV.BasicColiType.Explosion, otherObj.spellInfo.materialType);
+            CollisionDetected(GV.BasicColiType.Explosion);
         else
-            CollisionDetected(GV.BasicColiType.Spell, otherObj.spellInfo.materialType);
+            CollisionDetected(GV.BasicColiType.Spell);
 
         if (otherObj.spellInfo.radioFreq != -1)
             otherObj.spellInfo.lastRadioFreqRecieved = otherObj.spellInfo.radioFreq;
@@ -334,12 +330,12 @@ public class SpellInfo{
 
     public void CollisionDetected(SolidMaterial otherObj)
     {
-        CollisionDetected(GV.BasicColiType.SolidMaterial, otherObj.spellInfo.materialType);
+        CollisionDetected(GV.BasicColiType.SolidMaterial);
     }
 
     public void CollisionDetected(Explosion otherObj)
     {
-        CollisionDetected(GV.BasicColiType.Explosion, otherObj.materialType);
+        CollisionDetected(GV.BasicColiType.Explosion);
     }
 
     public void CollisionDetected(PlayerControlScript otherObj)
@@ -350,12 +346,11 @@ public class SpellInfo{
         }
     }
 
-    private void CollisionDetected(GV.BasicColiType coliType, GV.MaterialType _matType)
+    private void CollisionDetected(GV.BasicColiType coliType)
     {
-        if (!ignoreMetaColiType.Contains(coliType) && !ignoreMaterialColiType.Contains(_matType))
+        if (!ignoreMetaColiType.Contains(coliType))
         {
             lastBasicColiType = coliType;
-            lastMaterialColiType = _matType;
         }
     }
 

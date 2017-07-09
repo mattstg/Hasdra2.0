@@ -39,7 +39,6 @@ public class StateSlotGUIMinor : MonoBehaviour {
                 inputFeild.text = ssTuple.value;
                 break;
             case GV.StateVarType.ExistingSpells: 
-            case GV.StateVarType.MatType:
             case GV.StateVarType.RelativeType:            
             case GV.StateVarType.BasicColiType:           
             case GV.StateVarType.Shape:
@@ -59,6 +58,7 @@ public class StateSlotGUIMinor : MonoBehaviour {
             case GV.StateVarType.RadioOption:
             case GV.StateVarType.InteractionType:
             case GV.StateVarType.CastOnCharge:
+            case GV.StateVarType.SpellForm:
                 dropDown.gameObject.SetActive(true);
                 InitializeEnum(stateVar);
                 dropDown.value = UILayer.GetIndexOfValue(dropDown, ssTuple.value);
@@ -114,8 +114,8 @@ public class StateSlotGUIMinor : MonoBehaviour {
             case GV.StateVarType.SkillModType:
                 UILayer.FillDropdown<GV.SkillModScalingType>(dropDown);
                 break;
-            case GV.StateVarType.MatType:
-                UILayer.FillDropdown<GV.MaterialType>(dropDown);
+            case GV.StateVarType.SpellForm:
+                UILayer.FillDropdown<GV.SpellForms>(dropDown);
                 break;
             case GV.StateVarType.ModOPType:
                 UILayer.FillDropdown<GV.statechoice_modVar>(dropDown);
@@ -156,7 +156,7 @@ public class StateSlotGUIMinor : MonoBehaviour {
                 return inputFeild.text;
 
             case GV.StateVarType.ExistingSpells:
-            case GV.StateVarType.MatType:
+            case GV.StateVarType.SpellForm:
             case GV.StateVarType.RelativeType:
             case GV.StateVarType.BasicColiType:
             case GV.StateVarType.Shape:

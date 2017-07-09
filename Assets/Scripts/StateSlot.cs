@@ -113,9 +113,6 @@ public class StateSlot  {
 			case GV.States.FaceVeloVec:
 				toRet =  new FaceVeloVecSS();
 				break;
-            case GV.States.IgnoreColi:
-                toRet = new IgnoreColiSS();
-                break;
             case GV.States.SetAlpha:
                 toRet = new SetAlphaSS();
                 break;

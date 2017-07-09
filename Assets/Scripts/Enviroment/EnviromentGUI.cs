@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class EnviromentGUI : MonoBehaviour {
-    public Biome enviro;
     
     public TextMesh moistureText;
     public TextMesh nutrientText;
@@ -14,11 +13,11 @@ public class EnviromentGUI : MonoBehaviour {
 
     public void Update()
     {
-        moistureText.text = enviro.storedMoisture.ToString();
-        nutrientText.text = enviro.storedNutrient.ToString();
-        manaText.text = enviro.storedMana.ToString();
-        tempText.text = enviro.currentTemp.ToString();
-        desiredTempText.text = enviro.desiredTemp.ToString();
+        //moistureText.text = enviro.storedMoisture.ToString();
+        //nutrientText.text = enviro.storedNutrient.ToString();
+        //manaText.text = enviro.storedMana.ToString();
+        //tempText.text = enviro.currentTemp.ToString();
+        //desiredTempText.text = enviro.desiredTemp.ToString();
     }
 	
 }

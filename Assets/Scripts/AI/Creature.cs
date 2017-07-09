@@ -39,7 +39,7 @@ public class Creature : PlayerControlScript {
         audioInitialized = true;
         audioManager = gameObject.AddComponent<AudioManager>();
         audioManager.Initialize();
-        playAudio = System.IO.Directory.Exists("Assets/Hasdra/Resources/Audio/NPCs/" + pcsName);
+        playAudio = System.IO.Directory.Exists("Assets/Resources/Audio/NPCs/" + pcsName);
         
         //inputMap.LoadControls(pid); //load ctrls requires abMngr is up, abMangr requires inputmap on cnstr, so order here important
     }

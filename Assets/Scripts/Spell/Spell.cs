@@ -96,7 +96,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
 
         if (spellInfo.spellForm == GV.SpellForms.Energy)
         {
-            stampRepeater.Hardness = MaterialDict.Instance.GetStampValue(spellInfo.materialType, true, spellInfo.currentEnergy, spellInfo.densityEffect);
+            stampRepeater.Hardness = GV.EXPLOSION_STAMP*spellInfo.currentEnergy;
             stampRepeater.Size = transform.localScale * .2f; //Cuz of sprite size
         }
 
@@ -352,7 +352,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
 
     public void DeductUpkeep()
     {
-        float energyLossToUpkeep = MaterialDict.Instance.GetSpellUpkeep(spellInfo.materialType) * Time.deltaTime  * spellInfo.currentEnergy;
+        float energyLossToUpkeep = GV.SPELL_UPKEEP[(int)spellInfo.spellForm] * Time.deltaTime  * spellInfo.currentEnergy;
         energyLossToUpkeep = Mathf.Max(energyLossToUpkeep, bodyStats.getSkillValue("flatMinSpellUpkeep")*Time.deltaTime);
 		if (spellInfo.isMelee)
 			energyLossToUpkeep *= bodyStats.getSkillValue ("meleeDecay");
@@ -512,7 +512,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
         if (spellInfo.currentEnergy >= GV.SPELL_MIN_ENERGY_BEFORE_CHARGE_SKILLMODS) //then can charge skillmods  SPELL_MAX_PERCENT_CONSUMED_FOR_SKILLMOD
             energyTransfered = DistributeEnergyToChargingSkillMods(energyTransfered, _bodystatsOfCaster.getSkillValue("skillModChargeEfficency"));
 
-        float massToForceRatio = (spellInfo.initialLaunchVelo * MaterialDict.Instance.GetWeightPerEnergy(spellInfo.materialType)) / _bodystatsOfCaster.getSkillValue("energyPerForce");  //for every unit energy to spell, how much loss to maintain velo
+        float massToForceRatio = (spellInfo.initialLaunchVelo * GV.SPELL_FORM_WEIGHT_BASE[(int)spellInfo.spellForm]) / _bodystatsOfCaster.getSkillValue("energyPerForce");  //for every unit energy to spell, how much loss to maintain velo
         massToForceRatio++; //increase by one cause math
         float energyToSpell = energyTransfered / massToForceRatio;
         float energyToVelo = energyTransfered - energyToSpell;
@@ -586,15 +586,15 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
             SpellInfo otherSpellInfo = otherSpell.spellInfo;
             if (spellInfo.spellForm == GV.SpellForms.Energy && otherSpellInfo.spellForm == GV.SpellForms.Energy)
             {
-                Absorb(otherSpell.GetAbsorbed(spellInfo.currentEnergy, spellInfo.materialType), otherSpellInfo.materialType, otherSpell.GetComponent<Rigidbody2D>().velocity.magnitude, CoresTouching(otherSpell.transform), GV.BasicColiType.Spell);
+                Absorb(otherSpell.GetAbsorbed(spellInfo.currentEnergy), otherSpell.GetComponent<Rigidbody2D>().velocity.magnitude, CoresTouching(otherSpell.transform), GV.BasicColiType.Spell);
                 Vector2 dmgDir = GV.GetDamageDirection(otherObj.transform.position, otherSpellInfo.directionalDamageType, otherSpellInfo.currentAngle, transform.position);
-                otherSpell.TakeKnockBackDamage(dmgDir, DealDamage(otherObj.GetComponent<Rigidbody2D>().velocity), otherSpellInfo.materialType);
+                otherSpell.TakeKnockBackDamage(dmgDir, DealDamage(otherObj.GetComponent<Rigidbody2D>().velocity));
                 repelSelf = true;
             }
             else if(spellInfo.spellForm == GV.SpellForms.Energy && otherSpellInfo.spellForm == GV.SpellForms.Physical)
             {
                 Vector2 dmgDir = GV.GetDamageDirection(otherObj.transform.position, otherSpellInfo.directionalDamageType, otherSpellInfo.currentAngle, transform.position);
-                otherSpell.TakeKnockBackDamage(dmgDir, DealDamage(otherObj.GetComponent<Rigidbody2D>().velocity), otherSpellInfo.materialType);
+                otherSpell.TakeKnockBackDamage(dmgDir, DealDamage(otherObj.GetComponent<Rigidbody2D>().velocity));
                 Destructible2D.D2dDestructible d2d = otherObj.GetComponent<Destructible2D.D2dDestructible>();
                 bool coresAreTouching = CoresTouching(otherSpell.transform);
                 spellDestabilization.EnergyVsPhysicalDestablize(stampRepeater.Hardness, d2d.defensivePower, coresAreTouching, spellInfo.velocityVector.magnitude);
@@ -602,7 +602,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
             }
             else if (spellInfo.spellForm == GV.SpellForms.Physical && otherSpellInfo.spellForm == GV.SpellForms.Physical)
             {
-                TakeDamage(otherSpell.DealDamage(spellInfo.velocityVector), otherSpellInfo.materialType); //handles delta time internally
+                TakeDamage(otherSpell.DealDamage(spellInfo.velocityVector)); //handles delta time internally
             }
             spellInfo.CollisionDetected(otherSpell);
 
@@ -625,9 +625,9 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
             otherMaterial = (otherMaterial != null) ? otherMaterial : otherObj.transform.parent.GetComponent<SolidMaterial>();
             if (spellInfo.spellForm == GV.SpellForms.Energy && otherMaterial.spellInfo.spellForm == GV.SpellForms.Energy)
             {
-                float energyAbsorbing = otherMaterial.GetAbsorbed(spellInfo.currentEnergy, spellInfo.materialType);
+                float energyAbsorbing = otherMaterial.GetAbsorbed(spellInfo.currentEnergy);
                 float velocity = (otherMaterial.GetComponent<Rigidbody2D>()) ? otherMaterial.GetComponent<Rigidbody2D>().velocity.magnitude : 0;
-                Absorb(energyAbsorbing, otherMaterial.spellInfo.materialType, velocity, CoresTouching(otherMaterial.transform), GV.BasicColiType.SolidMaterial, true); //  No longer absorbs through that
+                Absorb(energyAbsorbing, velocity, CoresTouching(otherMaterial.transform), GV.BasicColiType.SolidMaterial, true); //  No longer absorbs through that
                 repelSelf = true;
             }
             else if (spellInfo.spellForm == GV.SpellForms.Energy && otherMaterial.spellInfo.spellForm == GV.SpellForms.Physical)
@@ -637,24 +637,24 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
                 spellDestabilization.EnergyVsPhysicalDestablize(stampRepeater.Hardness, d2d.defensivePower, coresAreTouching, spellInfo.velocityVector.magnitude);
                 repelSelf = true;
             }
-            else if (spellInfo.spellForm == GV.SpellForms.Physical && otherMaterial.spellInfo.spellForm == GV.SpellForms.Physical)
-            {
-                if(spellInfo.velocity >= GV.HAIRLINE_SPEED_MIN && spellInfo.hairlineCooldown >= GV.HAIRLINE_COOLDOWN)
-                {
-                    float hairlineDefense = MaterialDict.Instance.GetHairlineDefense(otherMaterial.spellInfo.materialType, otherMaterial.spellInfo.density);
-                    float dmg = DealDamage(new Vector2(0, 0)); //Assume solidmaterial isn't moving, if it is, doesn't matter really
-                    dmg /= Time.deltaTime; //undelta time it
-                    if (dmg > hairlineDefense)
-                    {
-                        spellInfo.hairlineCooldown = 0;
-                        float incomingAngle = GV.Vector2ToAngle(spellInfo.velocityVector);
-                        HairlineSplitterFactory.Instance.CreateStampingHairline(hairlineDefense, dmg, otherMaterial.gameObject, incomingAngle, spellInfo.lastPointOfPhysContact);
-                    }
-                }
-                //
-                //Debug.Log("ground dealing dmg to eachother eventaully");
-                //TakeDamage(otherMaterial.DealDamage(spellInfo.velocityVector), otherMaterial.spellInfo.materialType); //handles delta time internally
-            }
+            //else if (spellInfo.spellForm == GV.SpellForms.Physical && otherMaterial.spellInfo.spellForm == GV.SpellForms.Physical)
+            //{
+            //    if(spellInfo.velocity >= GV.HAIRLINE_SPEED_MIN && spellInfo.hairlineCooldown >= GV.HAIRLINE_COOLDOWN)
+            //    {
+            //        float hairlineDefense = MaterialDict.Instance.GetHairlineDefense(otherMaterial.spellInfo.materialType, otherMaterial.spellInfo.density);
+            //        float dmg = DealDamage(new Vector2(0, 0)); //Assume solidmaterial isn't moving, if it is, doesn't matter really
+            //        dmg /= Time.deltaTime; //undelta time it
+            //        if (dmg > hairlineDefense)
+            //        {
+            //            spellInfo.hairlineCooldown = 0;
+            //            float incomingAngle = GV.Vector2ToAngle(spellInfo.velocityVector);
+            //            HairlineSplitterFactory.Instance.CreateStampingHairline(hairlineDefense, dmg, otherMaterial.gameObject, incomingAngle, spellInfo.lastPointOfPhysContact);
+            //        }
+            //    }
+            //    //
+            //    //Debug.Log("ground dealing dmg to eachother eventaully");
+            //    //TakeDamage(otherMaterial.DealDamage(spellInfo.velocityVector), otherMaterial.spellInfo.materialType); //handles delta time internally
+            //}
             spellInfo.CollisionDetected(otherMaterial);
         }
         else if (otherObj.CompareTag("Player"))
@@ -671,7 +671,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
                         pastPcs.Add(pcs);
                         if (!(spellInfo.interactionParams.Contains(GV.InteractionType.Caster_Damage) && pcs.pid == casterID))
                         {
-                            pcs.TakeDamage(dealDamage, spellInfo.materialType);
+                            pcs.TakeDamage(dealDamage);
                         }
                         if (!(spellInfo.interactionParams.Contains(GV.InteractionType.Caster_Knockback) && pcs.pid == casterID))
                         {
@@ -680,8 +680,8 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
                             //pcs.KnockBackFromDamage(dealDamage, damageDirection, spellInfo.materialType, true);
                             float energyUsedInKnockback = dealDamage;
                             if (!spellInfo.useDefaultForce)
-                                energyUsedInKnockback = Mathf.Min(dealDamage, spellInfo.cappedExplosiveForce / MaterialDict.Instance.GetKnockback(spellInfo.materialType));
-                            pcs.FullKnockbackFromDamage(energyUsedInKnockback, damageDirection, spellInfo.materialType);
+                                energyUsedInKnockback = Mathf.Min(dealDamage, spellInfo.cappedExplosiveForce / GV.SPELL_KNOCKBACK_PER_ENERGY);
+                            pcs.FullKnockbackFromDamage(energyUsedInKnockback, damageDirection);
                         }
                         spellDestabilization.CollideWithEntity();
                     }
@@ -691,7 +691,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
                     bool headshot = pcs.IsHeadshot(gameObject);
                     float dealDamage = DealDamage(otherObj.GetComponent<Rigidbody2D>().velocity); //wonder if player hitting ground will have same problem as spellInfo.velo
                     dealDamage *= (headshot) ? GV.PLAYER_HEADSHOT_BONUS : 1;
-					float dmgdlt = pcs.TakeDamage(dealDamage, spellInfo.materialType); //diference in velo*mass
+					float dmgdlt = pcs.TakeDamage(dealDamage); //diference in velo*mass
                 }
                 if (!(spellInfo.interactionParams.Contains(GV.InteractionType.Caster_SkillMod) && pcs.pid == casterID))
                 {
@@ -709,28 +709,29 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
         if (repelSelf)
         {
             Vector2 dmgDir = GV.GetDamageDirection(transform.position, spellInfo.directionalDamageType, spellInfo.currentAngle, otherObj.transform.position) * -1;
-            TakeKnockBackDamage(dmgDir, DealDamage(new Vector2(0, 0)), spellInfo.materialType);
+            TakeKnockBackDamage(dmgDir, DealDamage(new Vector2(0, 0)));
         }
     }
 
     //Not currently called anywhere due to speed clipping through ground issues
     private void CollideWithGround(SolidMaterial solidMaterial)
     {
-        if (spellInfo.spellForm == GV.SpellForms.Energy)
-        {
-            //When a spell collides with ground, it should burn through it, as well as absorb. Instead of just exploding
-            //solidMaterial.HitBySpell(spellInfo.currentEnergy * GV.ENERGYFORM_ABSORBPTION_RATE * Time.deltaTime); //This will be used when thier is absorbption instead of just straight explosion
-            solidMaterial.HitBySpell(spellInfo.currentEnergy); //explosions should deal the actaul one second dmg to ground instead
-           //Absorb(
-            float energyAbsorbing =  MaterialDict.Instance.GetAbsorbtionResitance(spellInfo.materialType,solidMaterial.GetSpellInfo().materialType) * spellInfo.currentEnergy;
-            //Absorb
-            //spellDestabilization.Absorb(
-            Explode();
-        }
-        else if (spellInfo.spellForm == GV.SpellForms.Physical)
-        {
-            
-        } //for smoke as well in future
+        Debug.Log("uh oh sphagetti oohhhhs");
+        //if (spellInfo.spellForm == GV.SpellForms.Energy)
+        //{
+        //    //When a spell collides with ground, it should burn through it, as well as absorb. Instead of just exploding
+        //    //solidMaterial.HitBySpell(spellInfo.currentEnergy * GV.ENERGYFORM_ABSORBPTION_RATE * Time.deltaTime); //This will be used when thier is absorbption instead of just straight explosion
+        //    solidMaterial.HitBySpell(spellInfo.currentEnergy); //explosions should deal the actaul one second dmg to ground instead
+        //   //Absorb(
+        //    float energyAbsorbing =  MaterialDict.Instance.GetAbsorbtionResitance(spellInfo.materialType,solidMaterial.GetSpellInfo().materialType) * spellInfo.currentEnergy;
+        //    //Absorb
+        //    //spellDestabilization.Absorb(
+        //    Explode();
+        //}
+        //else if (spellInfo.spellForm == GV.SpellForms.Physical)
+        //{
+        //    
+        //} //for smoke as well in future
     }
 
     public float ChargeSkillMod(string skillAffected, float startEnergy,GV.SkillModScalingType skillModType, float controlValue, float energyTransfered, SkillModSS ssID, bool isDebuff, float percentChargeRate ,GV.ConstantOrPercent EnergyLimitType )
@@ -747,29 +748,29 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
         }
     }
 
-    public void Absorb(float energyAbsorbing, GV.MaterialType otherMaterialType, float otherSpeed, bool coresTouching, GV.BasicColiType colType, bool justDestabOnly = false)
+    public void Absorb(float energyAbsorbing, float otherSpeed, bool coresTouching, GV.BasicColiType colType, bool justDestabOnly = false)
     {
-        spellDestabilization.Absorb(energyAbsorbing, otherMaterialType, otherSpeed, coresTouching, colType);
+        spellDestabilization.Absorb(energyAbsorbing, otherSpeed, coresTouching, colType);
         if(!justDestabOnly)
             spellInfo.currentEnergy += energyAbsorbing;
     }
 
-    public void TakeKnockBackDamage(Vector2 dir, float energyAmt, GV.MaterialType matApplyingForce)
+    public void TakeKnockBackDamage(Vector2 dir, float energyAmt)
     { //Energy spells being affected only
         if (spellInfo.spellState == GV.SpellState.Launched)
         {
             Vector2 directionOfDmg = dir.normalized;
-            Vector2 forceApplying = directionOfDmg * energyAmt * MaterialDict.Instance.GetKnockback(matApplyingForce) * bodyStats.getResistanceValue("resistKnockback");
+            Vector2 forceApplying = directionOfDmg * energyAmt * bodyStats.getResistanceValue("resistKnockback");
             spellInfo.forceStoredForVelo += forceApplying;
         }
     }
 
-    public float GetAbsorbed(float totalEnergyOfConsumer, GV.MaterialType materialDevouring)
+    public float GetAbsorbed(float totalEnergyOfConsumer)
     {
         //in the future could have overlap, but would be hard to do that mathmatically with shapes
         
         //GV.ENERGYFORM_ABSORBPTION_RATE
-        float energyLosing = totalEnergyOfConsumer * Time.deltaTime * MaterialDict.Instance.GetAbsorbtionResitance(spellInfo.materialType, materialDevouring);
+        float energyLosing = totalEnergyOfConsumer * Time.deltaTime * GV.SPELL_ABSORB_OTHER;
         energyLosing = (energyLosing > spellInfo.currentEnergy) ? spellInfo.currentEnergy : energyLosing;
         spellInfo.currentEnergy -= energyLosing;
         //Debug.Log(materialType + "(e:" + spellInfo.currentEnergy + ") is being asborbed by " + materialDevouring + "(e:" + totalEnergyOfConsumer + ")");
@@ -822,21 +823,20 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
         }
     }
 
-    public void TakeDamage(float amount, GV.MaterialType materialDealingDamage)
+    public void TakeDamage(float amount)
     { //occurs in phys vs phys
         //Debug.Log("physical spell takes damage");
-        float totalDmgAmt = amount * MaterialDict.Instance.GetDamageResistance(spellInfo.materialType, GV.GetSpellFormByMaterialType(materialDealingDamage));
         //spellInfo.currentEnergy -= amount * MaterialDict.Instance.GetDamageResistance(spellInfo.materialType, GV.GetSpellFormByMaterialType(materialDealingDamage));
         //spellInfo.currentEnergy = spellInfo.currentEnergy < 0 ? 0 : spellInfo.currentEnergy;
         //Debug.Log(spellInfo.materialType + " is calling takeDamage, with other dealing dmg being " + materialDealingDamage);
         //float destab = totalDmgAmt / spellInfo.currentEnergy;
-        spellDestabilization.TakeDamage(totalDmgAmt, materialDealingDamage); //when you take physical dmg, you "absorb" that energy, causing destabilization
+        spellDestabilization.TakeDamage(amount); //when you take physical dmg, you "absorb" that energy, causing destabilization
         //stability -= (amount / spellInfo.currentEnergy) * MaterialDict.Instance.GetDistability(materialType, materialDealingDamage);
     }
     
     public float EnergyToHeat()
     {
-        float energyTurnedIntoHeat = GV.WORLD_FIRE_CONSUMPTION_RATE * temperature * Time.deltaTime * MaterialDict.Instance.GetHeatResistance(spellInfo.materialType);
+        float energyTurnedIntoHeat = GV.WORLD_FIRE_CONSUMPTION_RATE * temperature * Time.deltaTime; // * MaterialDict.Instance.GetHeatResistance(spellInfo.materialType);
         energyTurnedIntoHeat = (energyTurnedIntoHeat>spellInfo.currentEnergy)?spellInfo.currentEnergy:energyTurnedIntoHeat;
         spellInfo.currentEnergy -= energyTurnedIntoHeat;
         return energyTurnedIntoHeat;
@@ -844,7 +844,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
 
     public void ChangeTemperature(float amountOfHeat, float maxHeat)
     {
-        temperature += amountOfHeat * MaterialDict.Instance.GetHeatResistance(spellInfo.materialType);
+        temperature += amountOfHeat; // * MaterialDict.Instance.GetHeatResistance(spellInfo.materialType);
         temperature = temperature > maxHeat ? maxHeat : temperature;
         PostChangeTemperature();
     }
@@ -864,15 +864,16 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
     public void EmitRadioSignal(float goalAmount, float radioSignal, bool emitOnce, GV.ConstantOrPercent korperc)
     {
         //How to set the max to charge to
-        if (!spellInfo.ignoreCurrentState)
-        {
-            spellInfo.ignoreCurrentState = true;
-            SpellInfo toSend = new SpellInfo(spellInfo);
-            toSend.materialType = GV.MaterialType.Radio;
-            toSend.radioFreq = radioSignal;
-            toSend.currentEnergy = goalAmount;
-            ExplosionFactory.Instance.MakeExplosion(toSend, transform.position, new List<SkillModifier>());
-        }
+        Debug.Log("Emit radio called");
+        //if (!spellInfo.ignoreCurrentState)
+        //{
+        //    spellInfo.ignoreCurrentState = true;
+        //    SpellInfo toSend = new SpellInfo(spellInfo);
+        //    toSend.materialType = GV.MaterialType.Radio;
+        //    toSend.radioFreq = radioSignal;
+        //    toSend.currentEnergy = goalAmount;
+        //    ExplosionFactory.Instance.MakeExplosion(toSend, transform.position, new List<SkillModifier>());
+        //}
     }
 
     //DestructibleInterface Inherited functions

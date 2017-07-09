@@ -12,7 +12,6 @@ public class TransSlotStruct {
     public GV.SpellInfoDataType SIDT = GV.SpellInfoDataType.GoNext;
     public GV.RelativeType relValue = GV.RelativeType.Normal;
     public GV.BasicColiType basicColiType = GV.BasicColiType.None;
-    public GV.MaterialType spellColiType = GV.MaterialType.None;
 
     /*
     T GetData<T>(GV.SlotDataType slotType)
@@ -66,8 +65,8 @@ public class TransSlotStruct {
                 return CheckValid<bool>(si.relData.GetSIRelativeValue<bool>(SIDT,relValue), bValue);
             case GV.VarType.Float:
                 return CheckValid<float>(si.relData.GetSIRelativeValue<float>(SIDT, relValue), fValue);
-            case GV.VarType.SpellType:
-                return CheckValid<GV.MaterialType>(si.relData.GetSIRelativeValue<GV.MaterialType>(SIDT, relValue), spellColiType);
+            //case GV.VarType.SpellType:
+            //    return CheckValid<GV.MaterialType>(si.relData.GetSIRelativeValue<GV.MaterialType>(SIDT, relValue), spellColiType);
             case GV.VarType.BasicColiType:
                 return CheckValid<GV.BasicColiType>(si.relData.GetSIRelativeValue<GV.BasicColiType>(SIDT, relValue), basicColiType);
             case GV.VarType.String:
@@ -105,7 +104,7 @@ public class TransSlotStruct {
         toRet.Add("relValue", relValue.ToString());
         toRet.Add("SIDT", SIDT.ToString());
         toRet.Add("basicColiValue", basicColiType.ToString());
-        toRet.Add("spellColiValue", spellColiType.ToString());
+        //toRet.Add("spellColiValue", spellColiType.ToString());
         return toRet;
     }
 
@@ -121,6 +120,6 @@ public class TransSlotStruct {
         SIDT              = (GV.SpellInfoDataType)System.Enum.Parse(typeof(GV.SpellInfoDataType),xmlImportDict["SIDT"]);
         relValue          = (GV.RelativeType)System.Enum.Parse(typeof(GV.RelativeType), xmlImportDict["relValue"]);
         basicColiType     = (GV.BasicColiType)System.Enum.Parse(typeof(GV.BasicColiType), xmlImportDict["basicColiValue"]);
-        spellColiType     = (GV.MaterialType)System.Enum.Parse(typeof(GV.MaterialType), xmlImportDict["spellColiValue"]);
+        //spellColiType     = (GV.MaterialType)System.Enum.Parse(typeof(GV.MaterialType), xmlImportDict["spellColiValue"]);
     }
 }

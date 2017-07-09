@@ -54,6 +54,7 @@ public class BodyStatFiller
         AddSkill("maximumHP", GV.Stats.Const, stats); //scaling value, not total value
 		AddSkill("maximumStamina", GV.Stats.Const, stats); //scaling value, not total value
 		AddSkill("concussMax", GV.Stats.Const, stats); //scaling value, not total value
+        AddSkill("dmgResist", GV.Stats.Const, stats);
         //Char
 
         //Int
