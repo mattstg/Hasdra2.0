@@ -3,6 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class worldInstantiator : MonoBehaviour {
+	public float gain = 1.5f;
+	public float lacunarity =  1.5f;
+	public float octaves = 6;
+	public float baseWave = 250;
+	public float baseAmp = 250;
+
+	public float mapMin = -200;
+	public float mapMax = 200;
+
 	public functions defaultFunc = new secondPower();
 
 	private float x;
@@ -15,7 +24,7 @@ public class worldInstantiator : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 				// x range, y range ......... gain  lacunarity   octaves   baseWave  baseAmp 
-		Generate (-4000, 4000,new perlinManager(1.5f     ,     1.5f   ,  6,        250,       150));
+		Generate (mapMin, mapMax,new perlinManager( gain, lacunarity, octaves, baseWave,  baseAmp));
 
 
 	}
