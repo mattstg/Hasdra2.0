@@ -85,10 +85,13 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
 
     public void Update()
     {
+        float dt = Time.deltaTime;
         spellInfo.UpdateInternal();
 
-        if (spellInfo.spellState == GV.SpellState.Charging || spellInfo.spellState == GV.SpellState.Launched)
-            UpdateAsSpell();
+        if (spellInfo.spellState == GV.SpellState.Launched)
+            UpdateAsSpell(dt);
+        else if (spellInfo.spellState == GV.SpellState.Charging)
+            UpdateAsChargingSpell(dt);
         else if (spellInfo.spellState == GV.SpellState.Exploding)
             UpdateAsExplosion();
         else if (spellInfo.spellState == GV.SpellState.FinishedExplosion)
@@ -112,8 +115,43 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
         Fizzle();
     }
 
-    public void UpdateAsSpell()
+    public void UpdateAsChargingSpell(float dt)
     {
+        if (!spellInfo.initialized)
+        {
+            Debug.LogError("aww something has to be wrong for this to happen");
+            return;
+        }
+
+        Debug.Log("Updating, energy current: " + spellInfo.currentEnergy + ", " + spellInfo.energyInSideBank);
+        spellInfo.currentEnergy += spellInfo.energyInSideBank;
+        spellInfo.spellPos = transform.position;
+        spellInfo.currentAngle = facingAng;
+
+        StaticReferences.numericTextManager.CreateNumericDisplay(this, transform, "SpellEnergy", "", spellInfo.currentEnergy, Color.yellow, true);
+
+        SetSizeAndMass();
+        if (spellDestabilization.StabilizeUpkeep())
+            Explode();
+
+        if (spellInfo.currentEnergy <= 0)
+        {
+            Debug.Log("Dis fizzle from happend during charging");
+            Fizzle();
+        }
+
+        spellAnimManager.UpdateAnimations();
+    }
+
+    public void UpdateAsSpell(float dt)
+    {
+        if (!spellInfo.initialized)
+        {
+            Debug.LogError("Holy fuck something really has to be wrong for this to happen");
+            return;
+        }
+
+        Debug.Log("Updating, energy current: " + spellInfo.currentEnergy + ", " + spellInfo.energyInSideBank);
         spellInfo.currentEnergy += spellInfo.energyInSideBank;
         spellInfo.spellPos = transform.position;
         spellInfo.currentAngle = facingAng;
@@ -121,7 +159,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
         if (spellInfo.spellState == GV.SpellState.Launched)
         {
             DeductUpkeep();
-            spellInfo.timeAlive += Time.deltaTime;
+            spellInfo.timeAlive += dt;
         }
 
         if (DEBUG_CauseExplosion)
@@ -131,7 +169,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
         }
         if (DEBUG_GrowHacks)
         {
-            spellInfo.currentEnergy += Time.deltaTime * 40;
+            spellInfo.currentEnergy += dt * 40;
             spellInfo.currentEnergy = (spellInfo.currentEnergy >= DEBUG_MaxEnergy) ? DEBUG_MaxEnergy : spellInfo.currentEnergy;
         }
 
@@ -149,7 +187,10 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
             Explode();
 
         if (spellInfo.currentEnergy <= 0)
+        {
+            Debug.Log("Dis fizzle");
             Fizzle();
+        }
 
         spellAnimManager.UpdateAnimations();
 

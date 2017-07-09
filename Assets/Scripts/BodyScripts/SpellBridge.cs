@@ -188,6 +188,7 @@ public class SpellBridge : MonoBehaviour {
 
     private void ResetSpellBridgeValues()
     {
+        Debug.Log("Reset values");
         storedEnergy = 0;
         isCharging = false;
         chargingSpellName = "";
