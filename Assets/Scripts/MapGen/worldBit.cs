@@ -35,6 +35,16 @@ public class worldBit : MonoBehaviour {
 		Initialize (startPoint, endPoint);
 	}
 
+	public void Initialize (Vector2 startPoint, Vector2 endPoint, float _lowerstPoint, float verticalOffset){
+		hight = startPoint.y;
+		point1 = startPoint;
+		point2 = endPoint;
+		slope = (endPoint.y - startPoint.y) / (endPoint.x - startPoint.x);
+		type = getType (slope);
+		Resize ();
+		SetToWorldPos (startPoint + new Vector2(0,verticalOffset));
+	}
+
 	public void Initialize(Vector2 startPoint, Vector2 endPoint){
 		hight = startPoint.y;
 		point1 = startPoint;

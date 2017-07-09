@@ -11,10 +11,10 @@ public class MAP_GV : MonoBehaviour {
 
 	public static float _bedrock = -50;
 	public static float _floorSafety = 0.25f;
-	public static bool _whiteTile = true;
 
-	enum _tileType {W, B, Wn};
-	public static string tileType = "Wn"; // "W" , "", or "Wn"
+
+	enum _tileType {W, B, Wn}
+	public static string tileType = "W"; // "W" , "", or "Wn"
 
 	// Use this for initialization
 	void Start () {
