@@ -3,30 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class worldInstantiator : MonoBehaviour {
-	public float gain = 1.5f;
-	public float lacunarity =  1.5f;
-	public float octaves = 6;
+	public float gain = 1.2f;
+	public float lacunarity =  1.2f;
+	public float octaves = 7;
 	public float baseWave = 250;
 	public float baseAmp = 250;
 
-	public float mapMin = -200;
-	public float mapMax = 200;
+	public float mapMin = -500;
+	public float mapMax = 500;
+	public int tileType = 2;
 
-	public functions defaultFunc = new secondPower();
+	public float mapYOffset = 0;
 
 	private float x;
 	private Vector2 startPoint;
 	private Vector2 endPoint;
 	private float totalLowest;
-
+	perlinManager currentMap;
 
 
 	// Use this for initialization
 	void Start () {
 				// x range, y range ......... gain  lacunarity   octaves   baseWave  baseAmp 
-		Generate (mapMin, mapMax,new perlinManager( gain, lacunarity, octaves, baseWave,  baseAmp));
-
-
+		currentMap = new perlinManager( gain, lacunarity, octaves, baseWave,  baseAmp);
+		Generate (mapMin, mapMax, currentMap);
 	}
 	
 	// Update is called once per frame
@@ -34,10 +34,10 @@ public class worldInstantiator : MonoBehaviour {
 		
 	}
 
-	public void Generate(float startX, float endX, functions _func){
+	public void Generate(float startX, float endX, perlinManager _func){
 		totalLowest = _func.lowestOverInterval (startX, MAP_GV._xIncrement, endX);
-		if (totalLowest < MAP_GV._bedrock)
-			Debug.Log ("perlin extends below _bedrock");
+		_func.verticalOffset = totalLowest - mapYOffset;
+		totalLowest = mapYOffset;
 		x = startX;
 		float lowestPoint = _func.lowestOverInterval (startX, MAP_GV._xIncrement, startX + (float) MAP_GV._incrementBatch * MAP_GV._xIncrement + 1);
 		while (x < endX) {
@@ -71,14 +71,9 @@ public class worldInstantiator : MonoBehaviour {
 
 	}
 
-	public void Generate(float startX, float endX){
-		Generate (startX, endX, defaultFunc);
-	}
-
-
 
 	public worldBit InstantiateWB(worldBit.BitType type){
-		string s = MAP_GV.tileType;
+		string s = ((MAP_GV._tileType)tileType).ToString();
 		GameObject _worldBit = null;
 		switch (type) {
 		case worldBit.BitType.pos:
@@ -100,4 +95,7 @@ public class worldInstantiator : MonoBehaviour {
 		return _worldBit.GetComponent<worldBit> ();;
 	}
 
+	public float GetSurfacePoint(float x){
+		return currentMap.retY (x);
+	}
 }

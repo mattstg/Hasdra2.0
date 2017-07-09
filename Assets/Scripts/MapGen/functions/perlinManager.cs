@@ -5,6 +5,7 @@ using UnityEngine;
 public class perlinManager : functions {
 	perlin[] pearls; 
 	ridgeNoise ridges;
+	public float verticalOffset = 0;
 
 	public perlinManager(float _gain, float _lacunarity, float _octaves, float _baseWavelength, float _baseAmplitude){
 		float offset = Random.Range(-1000,-10000);
@@ -24,7 +25,7 @@ public class perlinManager : functions {
 			sum += p.retY (x);
 		}
 		sum += ridges.retY (x);
-		return sum;
+		return sum - verticalOffset;
 	}
 
 }
