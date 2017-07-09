@@ -39,7 +39,7 @@ public class worldInstantiator : MonoBehaviour {
 		if (totalLowest < MAP_GV._bedrock)
 			Debug.Log ("perlin extends below _bedrock");
 		x = startX;
-		float lowestPoint = _func.lowestOverInterval (startX, MAP_GV._xIncrement, startX + (float) MAP_GV._incrementBatch * MAP_GV._xIncrement);
+		float lowestPoint = _func.lowestOverInterval (startX, MAP_GV._xIncrement, startX + (float) MAP_GV._incrementBatch * MAP_GV._xIncrement + 1);
 		while (x < endX) {
 			startPoint = new Vector2(x,_func.retY (x));
 			endPoint = new Vector2(x + MAP_GV._xIncrement,_func.retY (x + MAP_GV._xIncrement));
@@ -55,7 +55,7 @@ public class worldInstantiator : MonoBehaviour {
 				
 			x += MAP_GV._xIncrement;
 			if ((x - startX) % (MAP_GV._incrementBatch * MAP_GV._xIncrement) == 0) {
-				lowestPoint = _func.lowestOverInterval (x, MAP_GV._xIncrement, x + (float)MAP_GV._incrementBatch * MAP_GV._xIncrement);
+				lowestPoint = _func.lowestOverInterval (x, MAP_GV._xIncrement, x + (float)MAP_GV._incrementBatch * MAP_GV._xIncrement + 1);
 				worldBit _b = InstantiateWB (worldBit.BitType.block);
 				Vector2 basePos = b.retBottomCorner ();
 				_b.Initialize(basePos,new Vector2(basePos.x,basePos.y),totalLowest);
