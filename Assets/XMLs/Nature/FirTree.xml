@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<StartElement>
+	<element>
+		<desiredTemp>1</desiredTemp>
+		<desiredHeight>1</desiredHeight>
+		<maxMoistureStorage>.7</maxMoistureStorage>
+		<maxNutrientStorage>.7</maxNutrientStorage>
+		<maxManaStorage>.7</maxManaStorage>
+		<desiredProductionRate>1</desiredProductionRate>
+		<geneBranchHeightVsWidth>1</geneBranchHeightVsWidth>
+		<growBigDesireDistribution>.2</growBigDesireDistribution>
+		<growBushDesireDistribution>.2</growBushDesireDistribution>
+		<produceDesireDistribution>.2</produceDesireDistribution>
+		<seedDesireDistribution>.2</seedDesireDistribution>
+		<splitDesireDistribution>.2</splitDesireDistribution>
+		<splitDistribution>1</splitDistribution>
+		<produceDistribution>1</produceDistribution>
+		<DesiredNumberOfBranches>1</DesiredNumberOfBranches>
+	</element>	
+	<EndElement />
+</StartElement>

@@ -21,6 +21,13 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+[Ll]ibrary/
+.vs/
+2D ForestArt/
+D2dBackup/
+Inspiration/
+Assets/Plugins/
+
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -48,7 +55,8 @@ artifacts/
 *_p.c
 *_i.h
 *.ilk
-*.meta
+*.sln
+*.csproj
 *.obj
 *.pch
 *.pdb
