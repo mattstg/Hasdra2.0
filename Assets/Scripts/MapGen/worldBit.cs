@@ -5,10 +5,10 @@ using UnityEngine;
 public class worldBit : MonoBehaviour {
 	private bool selfDestruct = false;
 
-	public enum BitType {nul, pos, neg, block};
+
 	public Vector2 point1 = new Vector2();
 	public Vector2 point2 = new Vector2 ();
-	public BitType type;
+	public MAP_GV.BitType type;
 	public float slope;
 	public float lowerstPoint;
 	public float hight;
@@ -59,27 +59,27 @@ public class worldBit : MonoBehaviour {
 
 	virtual public void SetToWorldPos(Vector2 toSet){	}
 
-	public static worldBit.BitType getType(Vector2 sP, Vector2 eP){
+	public static MAP_GV.BitType getType(Vector2 sP, Vector2 eP){
 		float slope = (eP.y - sP.y) / (eP.x - sP.x);
 		if (slope < MAP_GV._flatRange && slope > -MAP_GV._flatRange)
-			return worldBit.BitType.block;
+			return MAP_GV.BitType.block;
 		else if (slope > 0)
-			return worldBit.BitType.pos;
+			return MAP_GV.BitType.pos;
 		else
-			return worldBit.BitType.neg;
+			return MAP_GV.BitType.neg;
 	}
 
-	public static worldBit.BitType getType(float _slope){
+	public static MAP_GV.BitType getType(float _slope){
 		if (_slope < MAP_GV._flatRange && _slope > -MAP_GV._flatRange)
-			return worldBit.BitType.block;
+			return MAP_GV.BitType.block;
 		else if (_slope > 0)
-			return worldBit.BitType.pos;
+			return MAP_GV.BitType.pos;
 		else
-			return worldBit.BitType.neg;
+			return MAP_GV.BitType.neg;
 	}
 
 	public Vector2 retBaseCorner(){
-		if (type == BitType.pos)
+		if (type == MAP_GV.BitType.pos)
 			return new Vector2 (transform.position.x + 0.5f * scaleOffset.x, transform.position.y - 0.5f * scaleOffset.y);
 		else
 			return new Vector2 (transform.position.x + 0.5f * scaleOffset.x, transform.position.y + 0.5f * scaleOffset.y);

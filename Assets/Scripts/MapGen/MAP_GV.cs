@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MAP_GV : MonoBehaviour {
 
+	public enum BitType {nul, pos, neg, block};
 
 	public static float _xIncrement = 0.5f; //breaks when going below 0.5f for some reason, results in negative scale
 	public static float _flatRange = 0.04f;
@@ -15,6 +16,8 @@ public class MAP_GV : MonoBehaviour {
 	public static float _mapCenterY = 0;
 
 	public enum _tileType {W, B, Wn}
+
+	public static float mapLimit = 2000;
 
 	// Use this for initialization
 	void Start () {

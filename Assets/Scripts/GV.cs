@@ -7,7 +7,7 @@ using System.Linq;
 //Might have to remove this and make a singleton if too much static memory is bad for a program
 
 public class GV : MonoBehaviour
-{
+{	
     //links
     public static UILayer smUiLayer;
     public static CharLevelUI charLvlUI;

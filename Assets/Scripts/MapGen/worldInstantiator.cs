@@ -58,8 +58,8 @@ public class worldInstantiator : MonoBehaviour {
 			endPoint = new Vector2(x + MAP_GV._xIncrement,_func.retY (x + MAP_GV._xIncrement));
 			worldBit b = InstantiateWB (worldBit.getType (startPoint, endPoint));
 			b.Initialize(startPoint,endPoint,lowestPoint);
-			if (b.type == worldBit.BitType.neg || b.type == worldBit.BitType.pos) {
-				worldBit _b = InstantiateWB (worldBit.BitType.block);
+			if (b.type == MAP_GV.BitType.neg || b.type == MAP_GV.BitType.pos) {
+				worldBit _b = InstantiateWB (MAP_GV.BitType.block);
 				Vector2 basePos = b.retBaseCorner ();
 				_b.Initialize(basePos,new Vector2(basePos.x + MAP_GV._xIncrement,basePos.y),lowestPoint);
 				_b.markForDestruction ();
@@ -69,7 +69,7 @@ public class worldInstantiator : MonoBehaviour {
 			x += MAP_GV._xIncrement;
 			if ((x - startX) % (MAP_GV._incrementBatch * MAP_GV._xIncrement) == 0) {
 				lowestPoint = _func.lowestOverInterval (x, MAP_GV._xIncrement, x + (float)MAP_GV._incrementBatch * MAP_GV._xIncrement + 1);
-				worldBit _b = InstantiateWB (worldBit.BitType.block);
+				worldBit _b = InstantiateWB (MAP_GV.BitType.block);
 				Vector2 basePos = b.retBottomCorner ();
 				_b.Initialize(basePos,new Vector2(basePos.x,basePos.y),totalLowest);
 				blockWB temp = (blockWB) _b;
@@ -85,20 +85,20 @@ public class worldInstantiator : MonoBehaviour {
 	}
 
 
-	public worldBit InstantiateWB(worldBit.BitType type){
+	public worldBit InstantiateWB(MAP_GV.BitType type){
 		string s = ((MAP_GV._tileType)tileType).ToString();
 		GameObject _worldBit = null;
 		switch (type) {
-		case worldBit.BitType.pos:
+		case MAP_GV.BitType.pos:
 			_worldBit = (GameObject) Instantiate (Resources.Load ("Prefabs/MapGen/Pos" + s));
 			break;
-		case worldBit.BitType.block:
+		case MAP_GV.BitType.block:
 			_worldBit = (GameObject) Instantiate (Resources.Load ("Prefabs/MapGen/Block" + s));
 			break;
-		case worldBit.BitType.neg:
+		case MAP_GV.BitType.neg:
 			_worldBit = (GameObject) Instantiate (Resources.Load ("Prefabs/MapGen/Neg" + s));
 			break;
-		case worldBit.BitType.nul:
+		case MAP_GV.BitType.nul:
 			Debug.Log ("Here??");
 			break;
 		default: 
