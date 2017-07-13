@@ -18,9 +18,9 @@ public class mapVBit {
 		float midH = midBit.getHighestPoint ();
 		float baseH = baseBit.getHighestPoint ();
 
-		if (topH >= y || y > midH)
+		if (topH <= y && y > midH)
 			return topBit;
-		else if (midH >= y || y > baseH)
+		else if (midH <= y && y > baseH)
 			return midBit;
 		else if (y > topH)
 			Debug.Log ("Attempt to find worldBit, but input " + y + " is above all bits");
