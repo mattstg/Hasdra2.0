@@ -32,5 +32,7 @@ public class blockWB : worldBit {
 		transform.position = new Vector2 (toSet.x - 0.5f * scaleOffset.x, toSet.y - 0.5f * scaleOffset.y);
 	}
 
-
+	public void SetBIGBlockToWorldPos(Vector2 toSet){
+		transform.position = new Vector2 (toSet.x + 0.5f * scaleOffset.x, toSet.y - 0.5f * scaleOffset.y);
+	}
 }

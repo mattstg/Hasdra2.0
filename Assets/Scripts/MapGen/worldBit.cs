@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class worldBit : MonoBehaviour {
-	private bool selfDestruct = false;
-
-
+public class worldBit : MonoBehaviour{
 	public Vector2 point1 = new Vector2();
 	public Vector2 point2 = new Vector2 ();
 	public MAP_GV.BitType type;
 	public float slope;
 	public float lowerstPoint;
 	public float hight;
+	public Vector2 topLeftCorner = new Vector2();
+	public Vector2 bottmLeftCorner = new Vector2();
+
 
 	public Vector2 scaleOffset = new Vector2(1,1);
 
@@ -24,11 +24,7 @@ public class worldBit : MonoBehaviour {
 	void Update () {
 		
 	}
-
-	void LateUpdate(){
-		if (selfDestruct)
-			Destroy (this);
-	}
+		
 		
 	public void Initialize(Vector2 startPoint, Vector2 endPoint, float _lowerstPoint){
 		lowerstPoint = _lowerstPoint;
@@ -43,6 +39,8 @@ public class worldBit : MonoBehaviour {
 		type = getType (slope);
 		Resize ();
 		SetToWorldPos (startPoint + new Vector2(0,verticalOffset));
+		topLeftCorner = retTopLeftCorner ();
+		bottmLeftCorner = retBottomLeftCorner ();
 	}
 
 	public void Initialize(Vector2 startPoint, Vector2 endPoint){
@@ -78,7 +76,7 @@ public class worldBit : MonoBehaviour {
 			return MAP_GV.BitType.neg;
 	}
 
-	public Vector2 retBaseCorner(){
+	public Vector2 retTopLeftCorner(){
 		if (type == MAP_GV.BitType.pos)
 			return new Vector2 (transform.position.x + 0.5f * scaleOffset.x, transform.position.y - 0.5f * scaleOffset.y);
 		else
@@ -87,12 +85,9 @@ public class worldBit : MonoBehaviour {
 
 	}
 
-	public Vector2 retBottomCorner(){
-		return new Vector2 (transform.position.x + 0.5f * scaleOffset.x, transform.position.y - 0.5f * scaleOffset.y);
+	public Vector2 retBottomLeftCorner(){
+		return new Vector2 (transform.position.x - 0.5f * scaleOffset.x, transform.position.y - 0.5f * scaleOffset.y);
 	}
-
-	public void markForDestruction(){
-		selfDestruct = true;
-	}
+		
 		
 }
