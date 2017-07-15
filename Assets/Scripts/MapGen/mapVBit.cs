@@ -44,7 +44,7 @@ public class mapVBit {
 	public void renderVBit(bool toRend){
 		topBit.liveWorldBit.SetActive (toRend);
 		midBit.liveWorldBit.SetActive (toRend);
-		if (baseBit.isNull)
+		if (!baseBit.isNull)
 			baseBit.liveWorldBit.SetActive (toRend);
 	}
 }

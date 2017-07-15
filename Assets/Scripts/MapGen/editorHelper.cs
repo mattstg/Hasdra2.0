@@ -8,17 +8,22 @@ public class editorHelper : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		transform.position = new Vector3 (10, map.currentMapCurve.retY (10) + 1, 0);
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		pos = transform.position;
-		mapVBit temp = map.currentMapStorage.getMapVBit (pos.x);
+		mapVBit temp = map.currentMapStorage.retVBitAtWorldX (pos.x);
 		if (temp != null) {
-			temp.topBit.liveWorldBit.GetComponent<SpriteRenderer> ().color = new Color (10, 0, 0);
-			temp.midBit.liveWorldBit.GetComponent<SpriteRenderer> ().color = new Color (10, 0, 0);
-			temp.baseBit.liveWorldBit.GetComponent<SpriteRenderer> ().color = new Color (10, 0, 0);
+			if (!temp.topBit.isNull)
+				temp.topBit.liveWorldBit.GetComponent<SpriteRenderer> ().color = new Color (0, 1, 0);
+			else
+				Debug.Log ("top bit null?");
+			if(!temp.midBit.isNull)
+				temp.midBit.liveWorldBit.GetComponent<SpriteRenderer> ().color = new Color (0, 1, 0);
+			if(!temp.baseBit.isNull)
+				temp.baseBit.liveWorldBit.GetComponent<SpriteRenderer> ().color = new Color (0, 1, 0);
 		}
 	}
 }
