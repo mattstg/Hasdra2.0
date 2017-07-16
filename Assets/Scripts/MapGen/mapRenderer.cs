@@ -30,6 +30,9 @@ public class mapRenderer : MonoBehaviour {
 				} else if(map.currentMapStorage.retVBitAtWorldX(x).isRendered){
 					//already rendered, we don't need to do anything
 				}else{
+					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
+						Debug.Log ("x " + x + "map " + map + " currentMapStorage " + map.currentMapStorage.outputArr() + " vBit " + map.currentMapStorage.retVBitAtWorldX(x));
+					}else
 					map.currentMapStorage.retVBitAtWorldX(x).renderVBit (true);
 				}
 			}
@@ -44,8 +47,14 @@ public class mapRenderer : MonoBehaviour {
 				}
 
 				if (renderRange.x == leftRender.x) {
+					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
+						Debug.Log ("x " + x + "map " + map + " currentMapStorage " + map.currentMapStorage.outputArr() + " vBit " + map.currentMapStorage.retVBitAtWorldX(x));
+					}else
 					map.currentMapStorage.retVBitAtWorldX(x).renderVBit (true);
 				} else {
+					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
+						Debug.Log ("x " + x + "map " + map + " currentMapStorage " + map.currentMapStorage.outputArr() + " vBit " + map.currentMapStorage.retVBitAtWorldX(x));
+					}else
 					map.currentMapStorage.retVBitAtWorldX(x).renderVBit (false);
 				}
 
@@ -62,7 +71,10 @@ public class mapRenderer : MonoBehaviour {
 				}
 
 				if (renderRange.y == rightRender.x) {
-					map.currentMapStorage.retVBitAtWorldX(x).renderVBit (false);
+					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
+						Debug.Log ("x " + x + "map " + map + " currentMapStorage " + map.currentMapStorage.outputArr() + " vBit " + map.currentMapStorage.retVBitAtWorldX(x));
+					}else
+						map.currentMapStorage.retVBitAtWorldX(x).renderVBit (false);
 				} else {
 					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
 						Debug.Log ("x " + x + "map " + map + " currentMapStorage " + map.currentMapStorage.outputArr() + " vBit " + map.currentMapStorage.retVBitAtWorldX(x));
