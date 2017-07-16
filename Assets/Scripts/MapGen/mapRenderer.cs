@@ -41,7 +41,6 @@ public class mapRenderer : MonoBehaviour {
 				if (map.currentMapStorage.retVBitAtWorldX(x) == null) {
 					//Debug.Log ("Trying to render a null VBit. Maybe instantiate the VBit here.");
 					map.GenerateChunk (x);
-					Debug.Log ("here");
 				}
 
 				if (renderRange.x == leftRender.x) {
@@ -65,6 +64,9 @@ public class mapRenderer : MonoBehaviour {
 				if (renderRange.y == rightRender.x) {
 					map.currentMapStorage.retVBitAtWorldX(x).renderVBit (false);
 				} else {
+					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
+						Debug.Log ("x " + x + "map " + map + " currentMapStorage " + map.currentMapStorage.outputArr() + " vBit " + map.currentMapStorage.retVBitAtWorldX(x));
+					}else
 					map.currentMapStorage.retVBitAtWorldX(x).renderVBit (true);
 				}
 				//Debug.Log ("rightRender Range: " + rightRender.ToString ());

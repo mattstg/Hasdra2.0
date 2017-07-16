@@ -28,7 +28,7 @@ public class mapStorage {
 			mapLimit -= mapLimit % MAP_GV._xIncrement;
 		}
 		mapArray = new mapVBit[(int) (mapLimit / MAP_GV._xIncrement)];
-		Debug.Log ("mapArr size is set to " + (int) (mapLimit / MAP_GV._xIncrement) );
+		//Debug.Log ("mapArr size is set to " + (int) (mapLimit / MAP_GV._xIncrement) );
 	}
 
 	public bool loadMapVBit(float x, mapVBit input){
@@ -68,8 +68,8 @@ public class mapStorage {
 				//Debug.Log ("Attempting to retrive MapVBit outside of map's rendered storage");
 			return null;
 		} else {
-			Debug.Log ("x = " + x + " and mapArr.Length = " + mapArray.Length);
-			Debug.Log ("You are attempting to retreive a bit outside of the map's size limit.");
+//			Debug.Log ("x = " + x + " and mapArr.Length = " + mapArray.Length);
+//			Debug.Log ("You are attempting to retreive a bit outside of the map's size limit.");
 			return null;
 		}
 	}
