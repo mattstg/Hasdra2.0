@@ -33,7 +33,7 @@ public class mapStorage {
 
 	public bool loadMapVBit(float x, mapVBit input){
 		x = worldXtoArrIndex (x);
-		if (x < 0 || x > mapLimit) {
+		if (x < 0 || x > (mapLimit / MAP_GV._xIncrement)) {
 			Debug.Log ("Attempting to input a bit outside (" + x + ") of the map range limit.");
 			Debug.Log ("Top bit " + input.topBit.point1 + " " + input.topBit.point2);
 			Debug.Log ("Mid bit " + input.midBit.point1 + " " + input.midBit.point2);
