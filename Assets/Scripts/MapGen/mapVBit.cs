@@ -4,29 +4,27 @@ using UnityEngine;
 
 public class mapVBit {
 	public bool isRendered = true;
-	public staticWorldBit topBit;
-	public staticWorldBit midBit;
-	public staticWorldBit baseBit;
+	public staticWorldBit[] bits = new staticWorldBit[3];
 
 	public mapVBit(staticWorldBit _top, staticWorldBit _mid, staticWorldBit _base){
-		topBit = _top;
-		midBit = _mid;
-		baseBit = _base;
+		bits[0] = _top;
+		bits[1] = _mid;
+		bits[2] = _base;
 	}
 
 	public staticWorldBit getBitAtHight(float y){
-		float topH = topBit.getHighestPoint ();
-		float midH = midBit.getHighestPoint ();
-		float baseH = baseBit.getHighestPoint ();
+		float topH = bits[0].getHighestPoint ();
+		float midH = bits[1].getHighestPoint ();
+		float baseH = bits[2].getHighestPoint ();
 
 		if (y > topH)
 			Debug.Log ("Attempt to find worldBit, but input " + y + " is above all bits");
 		else  if (topH <= y && y > midH)
-			return topBit;
+			return bits[0];
 		else if (midH <= y && y > baseH)
-			return midBit;
-		else if(!baseBit.isNull)
-			return baseBit;
+			return bits[1];
+		else if(!bits[2].notInitialized)
+			return bits[2];
 		return null;
 	}
 
@@ -35,25 +33,26 @@ public class mapVBit {
 	}
 
 	public float getTopSlope(){
-		if (!topBit.isBroken)
-			return topBit.retSlope ();
+		if (!bits[0].isBroken || bits[0].notInitialized)
+			return bits[0].retSlope ();
 		else
 			return 0;
 	}
 
 	public void renderVBit(bool toRend){
-		topBit.liveWorldBit.SetActive (toRend);
-		midBit.liveWorldBit.SetActive (toRend);
-		if (!baseBit.isNull)
-			baseBit.liveWorldBit.SetActive (toRend);
+		bits[0].liveWorldBit.SetActive (toRend);
+		bits[1].liveWorldBit.SetActive (toRend);
+		if (!bits[2].notInitialized)
+			bits[2].liveWorldBit.SetActive (toRend);
 	}
 }
 
 public class staticWorldBit {
-	public bool isNull = false;
+	public bool notInitialized = false;
+	public bool isBroken = false;
 
 	public GameObject liveWorldBit; // holds the game object
-	public bool isBroken = false;
+
 
 	//internals
 	public Vector2 point1 = new Vector2();
@@ -89,7 +88,7 @@ public class staticWorldBit {
 	}
 
 	public staticWorldBit(){
-		isNull = true;
+		notInitialized = true;
 	}
 
 
@@ -108,5 +107,18 @@ public class staticWorldBit {
 			return 0;
 		else
 			return slope;
+	}
+
+	public bool markAsDestroyed(){
+		if(liveWorldBit != null && isBroken){
+		liveWorldBit = null;
+		isBroken = true;
+			return true;
+		}else{
+			Debug.Log("Bit is already marked as destroyed.");
+			return false;
+		}
+		Debug.Log ("Some weird case has occured...");
+		return false;
 	}
 }

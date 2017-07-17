@@ -10,7 +10,7 @@ public class MAP_GV {
 	public static float _flatRange = 0.04f;
 	public static int _incrementBatch = 20; 
 
-	public static float renderDistance = 50;
+	public static float renderDistance = 150;
 
 	public static float _distToBedrock = -50; //from lowest point over whole map
 	public static float _floorSafety = 0.25f; //internal peram

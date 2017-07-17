@@ -33,14 +33,14 @@ public class mapStorage {
 
 	public bool loadMapVBit(float x, mapVBit input){
 		x = worldXtoArrIndex (x);
-		if (x < 0 || x > (mapLimit / MAP_GV._xIncrement)) {
+		if (x < 0 || x > mapArray.Length) {
 			Debug.Log ("Attempting to input a bit outside (" + x + ") of the map range limit.");
-			Debug.Log ("Top bit " + input.topBit.point1 + " " + input.topBit.point2);
-			Debug.Log ("Mid bit " + input.midBit.point1 + " " + input.midBit.point2);
-			Debug.Log ("Base bit " + input.baseBit.point1 + " " + input.baseBit.point2);
+			for (int c = 0; c < 3; c++) {
+				Debug.Log ("Bit# " + c + " Points: " + input.bits[c].point1 + " " + input.bits[c].point2);
+			}
 			Debug.Break ();
 			return false;
-		} else if(input.topBit == null || input.midBit == null || input.baseBit == null){
+		} else if(input.bits[0] == null || input.bits[1] == null || input.bits[2] == null){
 			Debug.Log ("Attempting to input an unfilled VBit. Some Bit inside is null.");
 			return false;
 		}else if (input == null) {
@@ -55,6 +55,47 @@ public class mapStorage {
 				mapArray [(int) x] = input;
 			}
 			
+			return true;
+		}
+	}
+
+	public bool refillLiveWorldBit(float x, int index, GameObject input){
+		x = worldXtoArrIndex (x);
+		if (x < 0 || x > mapArray.Length) {
+			Debug.Log ("Attempting to input a bit outside (" + x + ") of the map range limit.");
+			return false;
+		} else if (input == null) {
+			Debug.Log ("Attempting to input a null GameObject.");
+			return false;
+		} else if (index > 3 || index < 0) {
+			Debug.Log ("Attempting to input into non existent array index. Max == 3. Current == " + index);
+			return false;
+		}else if (mapArray [(int)x].bits [index].liveWorldBit == null && mapArray [(int)x].bits [index].isBroken) {
+			//This should relink the liveWorldBit with new one to replace a broken one
+			mapArray [(int)x].bits [index].liveWorldBit = input;
+			return true;
+		}else{
+			Debug.Log ("Trying to refill a worldBit with a live GameObject, but it is already linked to one...");
+			return false;
+		}
+	}
+
+	//Probably useless...
+	public bool loadMapBit(float x, int index, staticWorldBit input){
+		x = worldXtoArrIndex (x);
+		if (x < 0 || x > mapArray.Length) {
+			Debug.Log ("Attempting to input a bit outside (" + x + ") of the map range limit.");
+			Debug.Log ("Bit# " + index + " Points: " + input.point1 + " " + input.point2);
+			return false;
+		} else if(input == null){
+			Debug.Log ("Attempting to input a null staticWorldBit");
+			return false;
+		}else if (mapArray [(int)x].bits [index] != null && input.liveWorldBit != null) {
+			//This should relink the liveWorldBit with 
+			mapArray [(int)x].bits [index].liveWorldBit = input.liveWorldBit;
+			return true;
+		}else{
+			mapArray [(int) x].bits[index] = input;
 			return true;
 		}
 	}
@@ -91,7 +132,7 @@ public class mapStorage {
 		string output = "";
 		int counter = 0;
 		while (mapArray [counter] != null) {
-			output += "mapStorage index: " + counter + " pos: " + mapArray[counter].topBit.point1.ToString() + "  ||  ";
+			output += "mapStorage index: " + counter + " pos: " + mapArray[counter].bits[0].point1.ToString() + "  ||  ";
 			counter++;
 		}
 		return output;

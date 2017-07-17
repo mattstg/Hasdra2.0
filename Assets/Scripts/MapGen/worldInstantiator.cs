@@ -110,7 +110,7 @@ public class worldInstantiator : MonoBehaviour {
 
 
 
-				if(!midBit.isNull){
+				if(!midBit.notInitialized){
 					currentMapStorage.loadMapVBit (d, new mapVBit (topBit, midBit, baseBit));
 				//currentMapStorage.loadMapVBit (x - MAP_GV._xIncrement, new mapVBit (topBit, midBit, baseBit));
 				}else{
@@ -132,7 +132,7 @@ public class worldInstantiator : MonoBehaviour {
 		staticWorldBit midBit = new staticWorldBit();
 		staticWorldBit baseBit = new staticWorldBit();
 		float lowestPoint = currentMapCurve.lowestOverInterval (startX, MAP_GV._xIncrement, startX + (float)MAP_GV._incrementBatch * MAP_GV._xIncrement + 1);
-		while (x < endX || (x % (MAP_GV._incrementBatch * MAP_GV._xIncrement) != 0) && x < mapLimit) {
+		while (x < endX || ((x % (MAP_GV._incrementBatch * MAP_GV._xIncrement) != 0) && x < mapLimit && x >= 0)) {
 			if (x % (MAP_GV._incrementBatch * MAP_GV._xIncrement) == 0)
 				lowestPoint = currentMapCurve.lowestOverInterval (x, MAP_GV._xIncrement, x + (float)MAP_GV._incrementBatch * MAP_GV._xIncrement + 1);
 			startPoint = new Vector2 (x, currentMapCurve.retY (x));
@@ -165,7 +165,7 @@ public class worldInstantiator : MonoBehaviour {
 				Destroy (_B);
 			}
 		
-			if(!midBit.isNull)
+			if(!midBit.notInitialized)
 				currentMapStorage.loadMapVBit (x, new mapVBit (topBit, midBit, baseBit));
 				//currentMapStorage.loadMapVBit (x - MAP_GV._xIncrement, new mapVBit (topBit, midBit, baseBit));
 			else
