@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class worldInstantiator : MonoBehaviour {
+	public bool initializeOnStart = false;
 	public float gain = 1.2f;
 	public float lacunarity =  1.2f;
 	public float octaves = 7;
@@ -25,9 +26,13 @@ public class worldInstantiator : MonoBehaviour {
 	public perlinManager currentMapCurve;
 	public mapStorage currentMapStorage;
 
+
+	private int bitName = 1;
+
     Transform unityParent; //Used to store transforms for hiearchy
 
 	public void Start(){
+		if(initializeOnStart)
 		InitializeWorld (null);
 	}
 
@@ -101,7 +106,7 @@ public class worldInstantiator : MonoBehaviour {
 					_B.bigBlockResize (chunkLength, totalLowest + MAP_GV._distToBedrock + MAP_GV._floorSafety, basePos.y);
 					_B.SetBIGBlockToWorldPos(basePos);
 					baseBit = new staticWorldBit (_B);
-					_B.gameObject.GetComponent<SpriteRenderer> ().color = new Color (0, 0, 50);
+					//_B.gameObject.GetComponent<SpriteRenderer> ().color = new Color (0, 0, 50);
 					Destroy (b);
 					Destroy (_B);
 				}
@@ -138,10 +143,12 @@ public class worldInstantiator : MonoBehaviour {
 			startPoint = new Vector2 (x, currentMapCurve.retY (x));
 			endPoint = new Vector2 (x + MAP_GV._xIncrement, currentMapCurve.retY (x + MAP_GV._xIncrement));
 			worldBit b = InstantiateWB (worldBit.getType (startPoint, endPoint));
+			b.name = "i: " + x + " b#: " + bitName++;
 			b.Initialize (startPoint, endPoint, lowestPoint);
 			topBit = new staticWorldBit(b);
 			if (b.type == MAP_GV.BitType.neg || b.type == MAP_GV.BitType.pos) {
 				worldBit _b = InstantiateWB (MAP_GV.BitType.block);
+				_b.name = "i: " + x + " b#: " + bitName++;
 				Vector2 basePos = b.retTopLeftCorner ();
 				_b.Initialize (basePos, new Vector2 (basePos.x + MAP_GV._xIncrement, basePos.y), lowestPoint);
 				midBit = new staticWorldBit(_b);
@@ -153,13 +160,14 @@ public class worldInstantiator : MonoBehaviour {
 			if (x % (MAP_GV._incrementBatch * MAP_GV._xIncrement) == 0) {
 				//lowestPoint = _func.lowestOverInterval (x, MAP_GV._xIncrement, x + (float)MAP_GV._incrementBatch * MAP_GV._xIncrement + 1);
 				blockWB _B = (blockWB)InstantiateWB (MAP_GV.BitType.block);
+				_B.name = "i: " + x + " b#: " + bitName++;
 				Vector2 basePos = b.retBottomLeftCorner ();
 				//b.gameObject.GetComponent<SpriteRenderer> ().color = new Color (0, 50, 0);
 				_B.Initialize (basePos, new Vector2 (basePos.x, basePos.y), totalLowest);
 				_B.bigBlockResize ((float)MAP_GV._incrementBatch * MAP_GV._xIncrement, totalLowest + MAP_GV._distToBedrock + MAP_GV._floorSafety, basePos.y);
 				_B.SetBIGBlockToWorldPos(basePos);
 				baseBit = new staticWorldBit (_B);
-				_B.gameObject.GetComponent<SpriteRenderer> ().color = new Color (10, 0, 0);
+				//_B.gameObject.GetComponent<SpriteRenderer> ().color = new Color (10, 0, 0);
 				//_B.gameObject.GetComponent<SpriteRenderer> ().color = new Color (0, 0, 50);
 				Destroy (b);
 				Destroy (_B);
@@ -171,15 +179,16 @@ public class worldInstantiator : MonoBehaviour {
 			else
 				currentMapStorage.loadMapVBit(x, new mapVBit(topBit,baseBit,new staticWorldBit()));
 				//currentMapStorage.loadMapVBit(x - MAP_GV._xIncrement, new mapVBit(topBit,baseBit,new staticWorldBit()));
-			
+
 			x += MAP_GV._xIncrement;
 		}
 		Debug.Log(currentMapStorage.outputArr ());
 	}
 
-
 	public worldBit InstantiateWB(MAP_GV.BitType type){
 		string s = ((MAP_GV._tileType)tileType).ToString();
+		if (s == "B")
+			s = "";
 		GameObject _worldBit = null;
 		switch (type) {
 		case MAP_GV.BitType.pos:

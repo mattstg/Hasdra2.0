@@ -13,97 +13,103 @@ public class mapRenderer : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {	
-	
+		if (map == null)
+			map = FindObjectOfType<worldInstantiator> ();
+
+		if (map == null)
+			this.enabled = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		renderRange = returnRange ();
-		//Debug.Log("newRenderRange " + renderRange.ToString());
-		//Debug.Log ("lastRenderRange " + lastRenderRange.ToString ());
-		if (firstRender) {
-			firstRender = false;
-			for (float x = renderRange.x; x < renderRange.y; x+= MAP_GV._xIncrement) {
-				if (map.currentMapStorage.retVBitAtWorldX(x) == null) {
-					//Debug.Log ("Trying to render a null VBit. Maybe instantiate the VBit here.");
-					map.GenerateChunk (x);
-				} else if(map.currentMapStorage.retVBitAtWorldX(x).isRendered){
-					//already rendered, we don't need to do anything
-				}else{
-					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
-						if (map == null)
-							Debug.Log ("Map is NULL");
-						if (map.currentMapStorage == null)
-							Debug.Log ("Map Storage is NULL");
-						if (map.currentMapStorage.retVBitAtWorldX (x) == null) {
-							Debug.Log ("Map VBit is NULL");
-						}
-						Debug.Log ("x val is: " + x);
-					}else
-					map.currentMapStorage.retVBitAtWorldX(x).renderVBit (true);
+		if (renderRange != Vector2.zero) {
+			//Debug.Log("newRenderRange " + renderRange.ToString());
+			//Debug.Log ("lastRenderRange " + lastRenderRange.ToString ());
+			if (firstRender) {
+				firstRender = false;
+				for (float x = renderRange.x; x < renderRange.y; x += MAP_GV._xIncrement) {
+					if (map.currentMapStorage.retVBitAtWorldX (x) == null) {
+						//Debug.Log ("Trying to render a null VBit. Maybe instantiate the VBit here.");
+						map.GenerateChunk (x);
+					} else if (map.currentMapStorage.retVBitAtWorldX (x).isRendered) {
+						//already rendered, we don't need to do anything
+					} else {
+						if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
+							if (map == null)
+								Debug.Log ("Map is NULL");
+							if (map.currentMapStorage == null)
+								Debug.Log ("Map Storage is NULL");
+							if (map.currentMapStorage.retVBitAtWorldX (x) == null) {
+								Debug.Log ("Map VBit is NULL");
+							}
+							Debug.Log ("x val is: " + x);
+						} else
+							map.currentMapStorage.retVBitAtWorldX (x).renderVBit (true);
+					}
 				}
-			}
-		}else{
-			//left
-			leftRender = leftToChangeRange();
-			//Debug.Log ("leftRender Range: " + leftRender.ToString ());
-			for(float x = leftRender.x ; x < leftRender.y; x+= MAP_GV._xIncrement){
-				if (map.currentMapStorage.retVBitAtWorldX(x) == null) {
-					//Debug.Log ("Trying to render a null VBit. Maybe instantiate the VBit here.");
-					map.GenerateChunk (x);
-				}
+			} else {
+				//left
+				leftRender = leftToChangeRange ();
+				//Debug.Log ("leftRender Range: " + leftRender.ToString ());
+				for (float x = leftRender.x; x < leftRender.y; x += MAP_GV._xIncrement) {
+					if (map.currentMapStorage.retVBitAtWorldX (x) == null) {
+						//Debug.Log ("Trying to render a null VBit. Maybe instantiate the VBit here.");
+						map.GenerateChunk (x);
+					}
 
-				if (renderRange.x == leftRender.x) {
-					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
-						Debug.Log ("x " + x + "map " + map + " currentMapStorage " + map.currentMapStorage.outputArr() + " vBit " + map.currentMapStorage.retVBitAtWorldX(x));
-					}else
-					map.currentMapStorage.retVBitAtWorldX(x).renderVBit (true);
-				} else {
-					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
-						if (map == null)
-							Debug.Log ("Map is NULL");
-						if (map.currentMapStorage == null)
-							Debug.Log ("Map Storage is NULL");
-						if (map.currentMapStorage.retVBitAtWorldX (x) == null) {
-							Debug.Log ("Map VBit is NULL");
-						}
-						Debug.Log ("x val is: " + x);
-					}else
-					map.currentMapStorage.retVBitAtWorldX(x).renderVBit (false);
-				}
-
-			}
-
-			//right
-			rightRender = rightToChangeRange ();
-			for(float x = rightRender.x; x < rightRender.y; x+= MAP_GV._xIncrement){
-				if (map.currentMapStorage.retVBitAtWorldX(x) == null) {
-					//Debug.Log ("Trying to render a null VBit. Maybe instantiate the VBit here.");
-					map.GenerateChunk (x);
-					//Debug.Log ("here at x loc: " + x);
+					if (renderRange.x == leftRender.x) {
+						if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
+							Debug.Log ("x " + x + "map " + map + " currentMapStorage " + map.currentMapStorage.outputArr () + " vBit " + map.currentMapStorage.retVBitAtWorldX (x));
+						} else
+							map.currentMapStorage.retVBitAtWorldX (x).renderVBit (true);
+					} else {
+						if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
+							if (map == null)
+								Debug.Log ("Map is NULL");
+							if (map.currentMapStorage == null)
+								Debug.Log ("Map Storage is NULL");
+							if (map.currentMapStorage.retVBitAtWorldX (x) == null) {
+								Debug.Log ("Map VBit is NULL");
+							}
+							Debug.Log ("x val is: " + x);
+						} else
+							map.currentMapStorage.retVBitAtWorldX (x).renderVBit (false);
+					}
 
 				}
 
-				if (renderRange.y == rightRender.x) {
-					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
-						Debug.Log ("x " + x + "map " + map + " currentMapStorage " + map.currentMapStorage.outputArr() + " vBit " + map.currentMapStorage.retVBitAtWorldX(x));
-					}else
-						map.currentMapStorage.retVBitAtWorldX(x).renderVBit (false);
-				} else {
-					if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
-						if (map == null)
-							Debug.Log ("Map is NULL");
-						if (map.currentMapStorage == null)
-							Debug.Log ("Map Storage is NULL");
-						if (map.currentMapStorage.retVBitAtWorldX (x) == null) {
-							Debug.Log ("Map VBit is NULL");
-						}
-						Debug.Log ("x val is: " + x);
-						//Debug.Log ("x " + x + "map " + map + " vBit " + map.currentMapStorage.retVBitAtWorldX(x) + " currentMapStorage " + map.currentMapStorage.ToString());
-					}else
-					map.currentMapStorage.retVBitAtWorldX(x).renderVBit (true);
+				//right
+				rightRender = rightToChangeRange ();
+				for (float x = rightRender.x; x < rightRender.y; x += MAP_GV._xIncrement) {
+					if (map.currentMapStorage.retVBitAtWorldX (x) == null) {
+						//Debug.Log ("Trying to render a null VBit. Maybe instantiate the VBit here.");
+						map.GenerateChunk (x);
+						//Debug.Log ("here at x loc: " + x);
+
+					}
+
+					if (renderRange.y == rightRender.x) {
+						if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
+							Debug.Log ("x " + x + "map " + map + " currentMapStorage " + map.currentMapStorage.outputArr () + " vBit " + map.currentMapStorage.retVBitAtWorldX (x));
+						} else
+							map.currentMapStorage.retVBitAtWorldX (x).renderVBit (false);
+					} else {
+						if (map == null || map.currentMapStorage == null || map.currentMapStorage.retVBitAtWorldX (x) == null) {
+							if (map == null)
+								Debug.Log ("Map is NULL");
+							if (map.currentMapStorage == null)
+								Debug.Log ("Map Storage is NULL");
+							if (map.currentMapStorage.retVBitAtWorldX (x) == null) {
+								Debug.Log ("Map VBit is NULL");
+							}
+							Debug.Log ("x val is: " + x);
+							//Debug.Log ("x " + x + "map " + map + " vBit " + map.currentMapStorage.retVBitAtWorldX(x) + " currentMapStorage " + map.currentMapStorage.ToString());
+						} else
+							map.currentMapStorage.retVBitAtWorldX (x).renderVBit (true);
+					}
+					//Debug.Log ("rightRender Range: " + rightRender.ToString ());
 				}
-				//Debug.Log ("rightRender Range: " + rightRender.ToString ());
 			}
 		}
 	}
@@ -120,6 +126,8 @@ public class mapRenderer : MonoBehaviour {
 		float r2 = pos.x + renderDist;
 		if (r2 > map.currentMapStorage.mapArray.Length)
 			r2 = map.currentMapStorage.mapArray.Length;
+		if (r2 < 0)
+			r2 = 0;
 		return new Vector2 (r1,r2);
 	}
 

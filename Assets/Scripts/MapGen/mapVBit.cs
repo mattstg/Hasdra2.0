@@ -39,11 +39,19 @@ public class mapVBit {
 			return 0;
 	}
 
-	public void renderVBit(bool toRend){
-		bits[0].liveWorldBit.SetActive (toRend);
-		bits[1].liveWorldBit.SetActive (toRend);
-		if (!bits[2].notInitialized)
-			bits[2].liveWorldBit.SetActive (toRend);
+	public bool[] renderVBit(bool toRend){
+		//returns the index value of destroyed world bits
+		bool[] rendCheck = new bool[3];
+		for (int c = 0; c < 3; c++) {
+			if (bits [c] != null && !bits [c].notInitialized) {
+				rendCheck [c] = true;
+				bits [c].liveWorldBit.SetActive (toRend);
+			} else {
+				rendCheck [c] = false;
+				Debug.Log ("#" + c + " bit not being loaded. Is it initialized? " + (!bits [c].notInitialized) + ". Is bit == null? " + (bits [c] == null));
+			}
+		}
+		return rendCheck;
 	}
 }
 
