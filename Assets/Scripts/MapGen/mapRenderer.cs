@@ -120,9 +120,13 @@ public class mapRenderer : MonoBehaviour {
 
 	public Vector2 returnRange(){
 		pos = transform.position;
+
 		float r1 = pos.x - renderDist;
 		if (r1 < 0)
 			r1 = 0;
+		if (r1 > map.currentMapStorage.mapArray.Length)
+			r1 = map.currentMapStorage.mapArray.Length;
+		
 		float r2 = pos.x + renderDist;
 		if (r2 > map.currentMapStorage.mapArray.Length)
 			r2 = map.currentMapStorage.mapArray.Length;
