@@ -69,4 +69,15 @@ public class StartStateSS : StateSlot {
     { //there is a chance of older start state versions
         return ssDict.ContainsKey(_name);
     }
+
+    //Used by basic spell creator
+    public StartStateSS(Dictionary<string,SSTuple> _ssDict, State _parentState) 
+    {
+        ssDict = _ssDict;
+        parentState = _parentState;
+    }
+
+    public StartStateSS()
+    {
+    }
 }

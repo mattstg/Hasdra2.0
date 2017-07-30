@@ -35,7 +35,7 @@ public class SaveLoader : MonoBehaviour {
             sgc.ContractPressed(); //closes and saves all
 
         GV.smUiLayer.currentSpellLoaded.text = spellNameInput.text;
-        xmlEncoder.DictionaryListToXML<string>(spellNameInput.text, xmlEncoder.StateAndTransitionsToDictionaryList(stateGUIs, allTransGuis), GV.fileLocationType.Spells);
+        XMLEncoder.DictionaryListToXML<string>(spellNameInput.text, xmlEncoder.StateAndTransitionsToDictionaryList(stateGUIs, allTransGuis), GV.fileLocationType.Spells);
         tagManager.SetCurrentKey(spellNameInput.text);
         tagManager.Save();
     }

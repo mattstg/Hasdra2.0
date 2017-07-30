@@ -61,6 +61,9 @@ public class XMLEncoder {
     //No longer used, uses DictionaryListToXML, delete if dont need in future
     public static void DictionaryToXML<T>(string fileName, Dictionary<string, T> toXML, GV.fileLocationType dictionaryType)
     {
+        if (!Directory.Exists(GetFilePathByType(dictionaryType)))
+            Directory.CreateDirectory(GetFilePathByType(dictionaryType));
+
         if(File.Exists(GetFilePathByType(dictionaryType) + "/" + fileName + ".xml"))
             File.Delete(GetFilePathByType(dictionaryType) + "/" + fileName + ".xml");
         
@@ -103,7 +106,7 @@ public class XMLEncoder {
         }
     }
 
-    public void DictionaryListToXML<T>(string fileName, List<Dictionary<string, T>> dictList, GV.fileLocationType dictionaryType)
+    public static void DictionaryListToXML<T>(string fileName, List<Dictionary<string, T>> dictList, GV.fileLocationType dictionaryType)
     {
         if (File.Exists(GetFilePathByType(dictionaryType) + "/" + fileName + ".xml"))
             File.Delete(GetFilePathByType(dictionaryType) + "/" + fileName + ".xml");
@@ -164,6 +167,8 @@ public class XMLEncoder {
                 return "Assets/XMLs/NPCs";
             case GV.fileLocationType.TagManagers:
                 return "Assets/XMLs/TagManagers";
+            case GV.fileLocationType.BasicSpells:
+                return "Assets/XMLs/BasicSpell";
             default:
                 Debug.LogError("unhandled file type location, please add case");
                 return "";

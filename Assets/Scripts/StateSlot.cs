@@ -7,7 +7,7 @@ public class StateSlot  {
     public string stateDesc = "";
     public GV.States stateType;
     public Dictionary<string, SSTuple> ssDict = new Dictionary<string, SSTuple>();
-    State parentState;
+    protected State parentState;
 
     public virtual void Initialize(State _parentState)
     {

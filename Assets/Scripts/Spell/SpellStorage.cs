@@ -11,6 +11,7 @@ public class SpellStorage{
     public GV.SpellForms spellForm; //why isnt this in spellinfo?
     public List<SkillModSS> onChargeSkillMods;
     public string name;
+    public bool isBasicSpell;
 
     public SpellStorage()
     {        

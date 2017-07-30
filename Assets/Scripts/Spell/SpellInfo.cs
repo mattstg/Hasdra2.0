@@ -1,8 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.Runtime.CompilerServices;
 
 public class SpellInfo{
+
+    public enum siVarType { Float, }
+    public Dictionary<string, SIStruct> siDict;
 
     public SpellInfoRelativeManager relData;
     public GV.SpellState spellState = GV.SpellState.Charging;
@@ -111,6 +116,10 @@ public class SpellInfo{
     public float _massPerPixel;
     public float massPerPixel{get{return _massPerPixel;}}
     public float fakeEnergyForScale = 0;
+    public float range;
+    public float rps;
+    public float gravity;
+    public float knockbackMod;
 
     private float _mass = 0;
     private bool massDirty = true;
@@ -144,6 +153,7 @@ public class SpellInfo{
         velocity = toClone.velocity;
         initialLaunchVelo = toClone.initialLaunchVelo;
 		isFacingLaunchDir = toClone.isFacingLaunchDir;
+        range = toClone.range;
     
         velocityEnergyTransfer  = toClone.velocityEnergyTransfer - toClone.wisdom;
         castOnChargeParam  = toClone.castOnChargeParam;
@@ -161,6 +171,9 @@ public class SpellInfo{
         melee_maxRange_energy = toClone.melee_maxRange_energy;
         relData = new SpellInfoRelativeManager(this);
 		uniqueSpellID = toClone.uniqueSpellID;
+        rps = toClone.rps;
+        gravity = toClone.gravity;
+        knockbackMod = toClone.knockbackMod;
 
         directionalDamageType = toClone.directionalDamageType;
         useDefaultForce = toClone.useDefaultForce;
@@ -173,7 +186,21 @@ public class SpellInfo{
             interactionParams.Add(it);
 
         initialized = true;
-}
+    }
+
+    public void InitializeSpellInfo(Dictionary<string,string> spellInfoDict)
+    {
+        //Taken from xml
+        spellForm = (GV.SpellForms)(int.Parse(spellInfoDict["spellType"]));
+        velocity = float.Parse(spellInfoDict["velo"]);
+        range = float.Parse(spellInfoDict["range"]);
+        rps = float.Parse(spellInfoDict["rps"]);
+        density = float.Parse(spellInfoDict["density"]);
+        gravity = float.Parse(spellInfoDict["gravity"]);
+        
+
+
+    }
 
     public void InitializeSpellInfo(StateSlot startState)
     {
@@ -208,6 +235,11 @@ public class SpellInfo{
         currentAngle = toAdd.currentAngle;
         alpha = toAdd.alpha;
         spellColor = toAdd.spellColor;
+        range = toAdd.range;
+        rps = toAdd.rps;
+        gravity = toAdd.gravity;
+        knockbackMod = toAdd.knockbackMod;
+        
 
         foreach (GV.InteractionType it in toAdd.interactionParams)
             interactionParams.Add(it);
@@ -364,5 +396,24 @@ public class SpellInfo{
     public void UpdateInternal()
     {
         hairlineCooldown += Time.deltaTime;
+   }
+
+    public struct SIStruct
+    {
+        public string varName;
+        public siVarType varType;
+        public object var;
+        public TypeAttribute typeOfVar;
+    }
+
+    [AttributeUsage(AttributeTargets.Field)]
+    public class TypeAttribute : Attribute
+    {
+        public Type Type { get; private set; }
+
+        public TypeAttribute(Type type)
+        {
+            this.Type = type;
+        }
     }
 }

@@ -37,6 +37,16 @@ public class LiveSpellDict : MonoBehaviour {
                 AddSpell(filename, XMLDictListToSpell(filename, XMLEncoder.XmlToDictionaryList(filename, GV.fileLocationType.Spells)));
             }
         }
+        foreach (string filenameAndExt in Directory.GetFiles(XMLEncoder.GetFilePathByType(GV.fileLocationType.BasicSpells)))
+        {
+
+            if (Path.GetExtension(filenameAndExt) == ".xml")
+            {
+                string filename = Path.GetFileNameWithoutExtension(filenameAndExt);
+                //Debug.Log("Loading: " + filename);
+                AddSpell(filename, XMLDictListToSpell(filename, XMLEncoder.XmlToDictionaryList(filename, GV.fileLocationType.Spells)));
+            }
+        }
     }
 
     private string AllLoadedSpellNames()
@@ -46,6 +56,34 @@ public class LiveSpellDict : MonoBehaviour {
             toOut += k + ",";
         return toOut;
     }
+
+
+    public SpellStorage XMLBasicSpellToSpellStorage(string name, Dictionary<string, string> spellDictToLoad)
+    {
+        //turn the list given into a dictionary       
+        //Spell toReturn = new Spell();
+        //Debug.Log("Loading spell: " + name);
+        string spellType = "energy";
+        TreeTracker treeTracker = new TreeTracker();
+
+        List<SkillModSS> skillModSS = new List<SkillModSS>(); //chargables
+      
+        StateSlot startState = treeTracker.GetStartStateSlot();
+
+
+        SpellStorage toReturn = new SpellStorage();
+        toReturn.onChargeSkillMods = skillModSS;
+        toReturn.spellForm = (GV.SpellForms)(int.Parse(spellDictToLoad["spellType"]));
+        toReturn.startState = null;
+        toReturn.stateMachine = null;
+        toReturn.name = name;
+        toReturn.spellInfo = new SpellInfo();
+        toReturn.spellInfo.InitializeSpellInfo(startState);
+        toReturn.isBasicSpell = true;
+        return toReturn;
+    }
+
+
 
     public SpellStorage XMLDictListToSpell(string name, List<Dictionary<string,string>> spellDictToLoad)
     {
@@ -116,32 +154,33 @@ public class LiveSpellDict : MonoBehaviour {
         toReturn.name = name;
         toReturn.spellInfo = new SpellInfo();
         toReturn.spellInfo.InitializeSpellInfo(startState);
+        toReturn.isBasicSpell = false;
         return toReturn;
     }
 
-    private StartState DictToStartState(Dictionary<string, string> startStateDict)
-    {
-        StartState toReturn = new StartState();
-        toReturn.ImportFromDictionary(startStateDict);
-        return toReturn;
-    }
+    //private StartState DictToStartState(Dictionary<string, string> startStateDict)
+    //{
+    //    StartState toReturn = new StartState();
+    //    toReturn.ImportFromDictionary(startStateDict);
+    //    return toReturn;
+    //}
 
 
     //currently not in use
-    public void LoadAllSpells(List<string> spellsToLoad)
-    {
-        foreach (string spellName in spellsToLoad)
-        {
-            if (File.Exists(XMLEncoder.GetFilePathByType(GV.fileLocationType.Spells) + "/" + spellName + ".xml"))
-            {
-                AddSpell(spellName, XMLDictListToSpell(spellName, XMLEncoder.XmlToDictionaryList(spellName, GV.fileLocationType.Spells)));
-            }
-            else
-            {
-            }
-
-        }
-    }
+    //public void LoadAllSpells(List<string> spellsToLoad)
+    //{
+    //    foreach (string spellName in spellsToLoad)
+    //    {
+    //        if (File.Exists(XMLEncoder.GetFilePathByType(GV.fileLocationType.Spells) + "/" + spellName + ".xml"))
+    //        {
+    //            AddSpell(spellName, XMLDictListToSpell(spellName, XMLEncoder.XmlToDictionaryList(spellName, GV.fileLocationType.Spells)));
+    //        }
+    //        else
+    //        {
+    //        }
+    //
+    //    }
+    //}
 
     public static List<string> GetAllSpellNames()
     {

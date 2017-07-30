@@ -30,7 +30,7 @@ public class GV : MonoBehaviour
     public enum MeleeCastType { kick, basicPunch }
     public enum EnergyLimitType { None, Constant, PercentOfCasterMax};
     public enum Stats { Str, Const, Agi, Wis, Int, Dex, Char }
-    public enum fileLocationType { Spells, Characters, Trees, Xml, NPCs, TagManagers }
+    public enum fileLocationType { Spells, Characters, Trees, Xml, NPCs, TagManagers, BasicSpells }
     public enum DNAType { Player, NPC }
     enum StampType { DefenseConstant, OffenseMultiplier };
 
@@ -900,6 +900,79 @@ public class GV : MonoBehaviour
         }
         Debug.LogError("unhandled dmg dir: " + objDealingDmgType);
         return objectTakingDamage - objDealingDmg;
+    }
+
+    public static void SetDropdownByEnum(GV.StateVarType enumVar, Dropdown dropDown)
+    {
+        switch (enumVar)
+        {
+            case GV.StateVarType.BasicColiType:
+                UILayer.FillDropdown<GV.BasicColiType>(dropDown);
+                break;
+            case GV.StateVarType.ExistingSpells:
+                UILayer.FillDropdown(dropDown, LiveSpellDict.GetAllSpellNames());
+                break;
+            case GV.StateVarType.SkillMod:
+                UILayer.FillDropdown(dropDown, BodyStatFiller.GetAllSkills());
+                break;
+            case GV.StateVarType.CastOnCharge:
+                UILayer.FillDropdown<GV.CastOnCharge>(dropDown);
+                break;
+            case GV.StateVarType.InteractionType:
+                UILayer.FillDropdown<GV.InteractionType>(dropDown);
+                break;
+            case GV.StateVarType.RadioOption:
+                UILayer.FillDropdown<GV.RadioStateType>(dropDown);
+                break;
+            case GV.StateVarType.ColiMetaTypes:
+                UILayer.FillDropdown<GV.ColiMetaType>(dropDown);
+                break;
+            case GV.StateVarType.energyLimitType:
+                UILayer.FillDropdown<GV.EnergyLimitType>(dropDown);
+                break;
+            case GV.StateVarType.castType:
+                UILayer.FillDropdown<GV.CastType>(dropDown);
+                break;
+            case GV.StateVarType.MeleeCastType:
+                UILayer.FillDropdown<GV.MeleeCastType>(dropDown);
+                break;
+            case GV.StateVarType.damageDirectionType:
+                UILayer.FillDropdown<GV.DirectionalDamage>(dropDown);
+                break;
+            case GV.StateVarType.constantOrPercent:
+                UILayer.FillDropdown<GV.ConstantOrPercent>(dropDown);
+                break;
+            case GV.StateVarType.SkillModType:
+                UILayer.FillDropdown<GV.SkillModScalingType>(dropDown);
+                break;
+            case GV.StateVarType.SpellForm:
+                UILayer.FillDropdown<GV.SpellForms>(dropDown);
+                break;
+            case GV.StateVarType.ModOPType:
+                UILayer.FillDropdown<GV.statechoice_modVar>(dropDown);
+                break;
+            case GV.StateVarType.ModVarTime:
+                UILayer.FillDropdown<GV.statechoice_modVarTime>(dropDown);
+                break;
+            case GV.StateVarType.RelativeType:
+                UILayer.FillDropdown<GV.RelativeType>(dropDown);
+                break;
+            case GV.StateVarType.Rotate:
+                UILayer.FillDropdown<GV.statechoice_face>(dropDown);
+                break;
+            case GV.StateVarType.Shape:
+                UILayer.FillDropdown<GV.SpellShape>(dropDown);
+                break;
+            case GV.StateVarType.RelativeLaunchType:
+                UILayer.FillDropdown<GV.RelativeLaunchType>(dropDown);
+                break;
+            case GV.StateVarType.IgnoreXY:
+                UILayer.FillDropdown<GV.IgnoreXY>(dropDown);
+                break;
+            default:
+                Debug.Log("bad gui load" + enumVar.ToString());
+                break;
+        }
     }
 
 }
