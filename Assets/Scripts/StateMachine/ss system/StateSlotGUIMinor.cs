@@ -36,7 +36,7 @@ public class StateSlotGUIMinor : MonoBehaviour {
             case GV.StateVarType.String:
             case GV.StateVarType.Float:          
                 inputFeild.gameObject.SetActive(true);
-                inputFeild.text = ssTuple.value;
+                inputFeild.text = ssTuple.svalue;
                 break;
             case GV.StateVarType.ExistingSpells: 
             case GV.StateVarType.RelativeType:            
@@ -61,7 +61,7 @@ public class StateSlotGUIMinor : MonoBehaviour {
             case GV.StateVarType.SpellForm:
                 dropDown.gameObject.SetActive(true);
                 GV.SetDropdownByEnum(stateVar,dropDown);
-                dropDown.value = UILayer.GetIndexOfValue(dropDown, ssTuple.value);
+                dropDown.value = UILayer.GetIndexOfValue(dropDown, ssTuple.svalue);
                 dropDown.RefreshShownValue();
                 break;
             default:

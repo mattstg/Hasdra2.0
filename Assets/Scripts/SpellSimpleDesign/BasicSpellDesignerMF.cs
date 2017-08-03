@@ -25,13 +25,32 @@ public class BasicSpellDesignerMF : MonoBehaviour {
             bvs.FillTuple();
             toSaveDict[bvs.varName] = bvs.GetTuple();
         }
+
+        //Some hardcoded ones
+        int range = (int)(toSaveDict["Max_Range"].GetFValue());
+        switch(range)
+        {
+            case -2:
+                toSaveDict["Cast_type"] = new SSTuple("Cast_type", GV.CastType.SelfCast.ToString(), GV.StateVarType.castType);
+                break;
+            case -1:
+                toSaveDict["Cast_type"] = new SSTuple("Cast_type", GV.CastType.SelfCast.ToString(), GV.StateVarType.castType);
+                break;
+            default:
+                toSaveDict["Cast_type"] = new SSTuple("Cast_type", GV.CastType.Normal.ToString(), GV.StateVarType.castType);
+                break;
+        }
+        toSaveDict["Melee_type"] = new SSTuple("Melee_Type", GV.MeleeCastType.basicPunch.ToString(), GV.StateVarType.MeleeCastType);
+        toSaveDict["Min_energy_to_achieve_max_range"] = new SSTuple("Min_energy_to_achieve_max_range", "0", GV.StateVarType.Float);
+
+
         State basicSpellState = new State();
         basicSpellState.StateID = 0;
         StartStateSS startState = new StartStateSS(toSaveDict, basicSpellState);
         basicSpellState.AddStateSlot(startState);
         //Right here, you can add the BodyStatMod states! :D
 
-        XMLEncoder.DictionaryListToXML<string>(toSaveDict["name"].value, basicSpellState.ExportForXML(new Vector2()), GV.fileLocationType.BasicSpells);
+        XMLEncoder.DictionaryListToXML<string>(toSaveDict["name"].svalue, basicSpellState.ExportForXML(new Vector2()), GV.fileLocationType.BasicSpells);
         //ExportForXML
     }
 

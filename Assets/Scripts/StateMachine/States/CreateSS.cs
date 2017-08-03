@@ -23,7 +23,7 @@ public class CreateSS : StateSlot {
 
     public override void PerformStateAction(Spell spell)
     {
-        SpellLaunchParam slp = new SpellLaunchParam(ssDict["create"].value, new Vector2(ssDict["displacedX"].CastValue<float>(), ssDict["displacedY"].CastValue<float>()));
+        SpellLaunchParam slp = new SpellLaunchParam(ssDict["create"].svalue, new Vector2(ssDict["displacedX"].CastValue<float>(), ssDict["displacedY"].CastValue<float>()));
         spell.CreateSpellState(slp);
         //Debug.Log("state action Create");
     }

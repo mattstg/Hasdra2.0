@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 public class SpellInfo{
 
     public enum siVarType { Float, }
-    public Dictionary<string, SIStruct> siDict;
+    public Dictionary<string, SSTuple> siDict = new Dictionary<string, SSTuple>();
 
     public SpellInfoRelativeManager relData;
     public GV.SpellState spellState = GV.SpellState.Charging;
@@ -138,8 +138,24 @@ public class SpellInfo{
         relData = new SpellInfoRelativeManager(this);
     }
 
+
+    public SpellInfo(Dictionary<string,SSTuple> _siDict)
+    {
+        CloneSiDict(_siDict, true);
+    }
+
+    private void CloneSiDict(Dictionary<string,SSTuple> _siDict, bool resetSi)
+    {
+        if(resetSi || siDict == null)
+            siDict = new Dictionary<string, SSTuple>();
+        foreach (var kv in _siDict)
+            siDict[kv.Key] = new SSTuple(kv.Value);
+    }
+
     public SpellInfo(SpellInfo toClone)  //I know this is important, but honestly forget when i use it
     {
+        CloneSiDict(toClone.siDict, true);
+
         intelligence = toClone.intelligence;
         wisdom = toClone.wisdom;
         currentState = toClone.currentState;

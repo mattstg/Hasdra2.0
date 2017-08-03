@@ -39,7 +39,7 @@ public class StateSlot  {
         toRet.Add("stateSlotType", stateType.ToString());
         toRet.Add("SuperType", "StateSlot");
         foreach (KeyValuePair<string, SSTuple> kv in ssDict)
-            toRet.Add(kv.Key, kv.Value.value);
+            toRet.Add(kv.Key, kv.Value.svalue);
         return toRet;
     }
 
@@ -48,7 +48,8 @@ public class StateSlot  {
         parentState = treeTracker.GetStateByID(int.Parse(importDict["parentID"]));
         foreach (KeyValuePair<string, string> kv in importDict)
             if (ssDict.ContainsKey(kv.Key))
-                ssDict[kv.Key].value = kv.Value;
+                ssDict[kv.Key].svalue = kv.Value;
+
         VariableManualSave();
     }
 
@@ -57,13 +58,13 @@ public class StateSlot  {
     public void SaveCoreValues(Dictionary<string, string> dict)
     {
         foreach (KeyValuePair<string, string> kv in dict)
-            ssDict[kv.Key].value = kv.Value;
+            ssDict[kv.Key].svalue = kv.Value;
     }
 
     public virtual void PerformStateAction(Spell spell) { }
 
 
-    public static StateSlot CreateStateSlot(GV.States stateType, State parentState)
+    public static StateSlot CreateStateSlot(GV.States stateType, State parentState, bool initializeOnCreate = true)
     {
         StateSlot toRet;
         switch (stateType)
@@ -132,7 +133,8 @@ public class StateSlot  {
                 break;
         }
         toRet.stateType = stateType;
-        toRet.Initialize(parentState);
+        if(initializeOnCreate)
+            toRet.Initialize(parentState);
         return toRet;
     }
 

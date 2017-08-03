@@ -270,7 +270,7 @@ public class SpellBridge : MonoBehaviour {
             return null; //spell was empty
 
         GameObject newSpell = Instantiate(Resources.Load("Prefabs/Spell/BasicSpell"), new Vector2(spellBridgeParent.spellChargeLocation.position.x, spellBridgeParent.spellChargeLocation.position.y), Quaternion.identity) as GameObject;
-        newSpell.GetComponent<SpellInitializer>().InitializeSpell(spellStorage, this);        
+        newSpell.GetComponent<SpellInitializer>().InitializeSpell(spellStorage, this);
         currentSpell = newSpell.GetComponent<Spell>();
         currentSpell.spellInfo.spellState = GV.SpellState.Charging;
         switch (currentSpell.spellInfo.energyLimitType)

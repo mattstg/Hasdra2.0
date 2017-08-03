@@ -33,7 +33,7 @@ public class SkillModSS : StateSlot {
     public override void VariableManualSave()
     {
         percentCharge = ssDict["percentCharge"].CastValue<float>();
-        skillAffected = ssDict["skillValue"].value;
+        skillAffected = ssDict["skillValue"].svalue;
         energyLimit = ssDict["energyLimit"].CastValue<float>();
         skillModType = ssDict["skillModType"].CastValue<GV.SkillModScalingType>();
         controlValue = ssDict["controlValue"].CastValue<float>();

@@ -31,6 +31,7 @@ public class StartStateSS : StateSlot {
         AddSSTuple("SetScaleY", "1", GV.StateVarType.Float);
         AddSSTuple("shape", "Circle", GV.StateVarType.Shape);
         AddSSTuple("StartAlpha", "1", GV.StateVarType.Float);
+        AddSSTuple("rps", "0", GV.StateVarType.Float);
     }
 
     public override void PerformStateAction(Spell spell)
@@ -41,22 +42,23 @@ public class StartStateSS : StateSlot {
     public SpellInfo extractAsSpellInfo()
     {
         SpellInfo toRet = new SpellInfo();
-        toRet.castType = ssDict["Cast_type"].CastValue<GV.CastType>();
-        toRet.meleeCastType = ssDict["Melee_type"].CastValue<GV.MeleeCastType>();
-        toRet.melee_maxRange = ssDict["Max_range"].CastValue<float>();
-        toRet.melee_maxRange_energy = ssDict["Min_energy_to_achieve_max_range"].CastValue<float>();
-        toRet.spellForm = ssDict["SpellForm_Type"].CastValue<GV.SpellForms>();
-        toRet.castOnChargeParam = ssDict["Cast_on_charge_param"].CastValue<GV.CastOnCharge>();
-        toRet.initialLaunchVelo = ssDict["Initial_velocity"].CastValue<float>();
-        toRet.energyLimitType = ssDict["Energy_limit_type"].CastValue<GV.EnergyLimitType>();
-        toRet.energyLimit = ssDict["Energy_limit"].CastValue<float>();
-        toRet.initialLaunchAngleRelType = ssDict["Cast_dir_relative_to_cast"].CastValue<GV.RelativeLaunchType>();
-        toRet.isFacingLaunchDir = ssDict["Spell_faces_launch_dir"].CastValue<bool>();
-        float scaleX = (InDict("SetScaleX")) ? ssDict["SetScaleX"].CastValue<float>() : 1;
-        float scaleY = (InDict("SetScaleY")) ? ssDict["SetScaleY"].CastValue<float>() : 1;
+        toRet.castType = ssDict["Cast_type"].CastValue<GV.CastType>(); 
+        toRet.meleeCastType = ssDict["Melee_type"].CastValue<GV.MeleeCastType>();                                    //-
+        toRet.melee_maxRange = ssDict["Max_range"].CastValue<float>();                                               //-
+        toRet.melee_maxRange_energy = ssDict["Min_energy_to_achieve_max_range"].CastValue<float>();                  //-
+        toRet.spellForm = ssDict["SpellForm_Type"].CastValue<GV.SpellForms>();                                       //-
+        toRet.castOnChargeParam = ssDict["Cast_on_charge_param"].CastValue<GV.CastOnCharge>();                       //-
+        toRet.initialLaunchVelo = ssDict["Initial_velocity"].CastValue<float>();                                     //-
+        toRet.energyLimitType = ssDict["Energy_limit_type"].CastValue<GV.EnergyLimitType>();                         //-
+        toRet.energyLimit = ssDict["Energy_limit"].CastValue<float>();                                               //-
+        toRet.initialLaunchAngleRelType = ssDict["Cast_dir_relative_to_cast"].CastValue<GV.RelativeLaunchType>();    //-
+        toRet.isFacingLaunchDir = ssDict["Spell_faces_launch_dir"].CastValue<bool>();                                //-
+        float scaleX = (InDict("SetScaleX")) ? ssDict["SetScaleX"].CastValue<float>() : 1;                           //-
+        float scaleY = (InDict("SetScaleY")) ? ssDict["SetScaleY"].CastValue<float>() : 1;                           //-
         toRet.setScale = toRet.initialSetScale = new Vector2(scaleX, scaleY);
-        toRet.spellShape = ssDict["shape"].CastValue<GV.SpellShape>();
-        toRet.alpha = ssDict["StartAlpha"].CastValue<float>();
+        toRet.spellShape = ssDict["shape"].CastValue<GV.SpellShape>();                                               //-
+        toRet.alpha = ssDict["StartAlpha"].CastValue<float>();                                                       //-
+        toRet.rps = ssDict["rps"].CastValue<float>();                                                                //-
 
         if (InDict("Exclude_Interaction0")) //cuz older versions 
         for (int i = 0; i < 5; i++)

@@ -34,7 +34,7 @@ public class LiveSpellDict : MonoBehaviour {
             {
                 string filename = Path.GetFileNameWithoutExtension(filenameAndExt);
                 //Debug.Log("Loading: " + filename);
-                AddSpell(filename, XMLDictListToSpell(filename, XMLEncoder.XmlToDictionaryList(filename, GV.fileLocationType.Spells)));
+                AddSpell(filename, XMLDictListToSpell(filename, XMLEncoder.XmlToDictionaryList(filename, GV.fileLocationType.Spells),true));
             }
         }
         foreach (string filenameAndExt in Directory.GetFiles(XMLEncoder.GetFilePathByType(GV.fileLocationType.BasicSpells)))
@@ -44,7 +44,7 @@ public class LiveSpellDict : MonoBehaviour {
             {
                 string filename = Path.GetFileNameWithoutExtension(filenameAndExt);
                 //Debug.Log("Loading: " + filename);
-                AddSpell(filename, XMLDictListToSpell(filename, XMLEncoder.XmlToDictionaryList(filename, GV.fileLocationType.Spells)));
+                AddSpell(filename, XMLDictListToSpell(filename, XMLEncoder.XmlToDictionaryList(filename, GV.fileLocationType.BasicSpells),true));
             }
         }
     }
@@ -58,13 +58,47 @@ public class LiveSpellDict : MonoBehaviour {
     }
 
 
-    public SpellStorage XMLBasicSpellToSpellStorage(string name, Dictionary<string, string> spellDictToLoad)
+   /* public SpellStorage XMLBasicSpellToSpellStorage(string name, List<Dictionary<string, string>> spellDictToLoad)
     {
         //turn the list given into a dictionary       
         //Spell toReturn = new Spell();
         //Debug.Log("Loading spell: " + name);
         string spellType = "energy";
         TreeTracker treeTracker = new TreeTracker();
+        foreach (Dictionary<string, string> dict in spellDictToLoad)
+        {
+            if (dict["SuperType"] == "State")
+            {
+                State toadd = new State();
+                toadd.ImportFromDictionary(dict);
+                treeTracker.AddState(toadd);
+            }
+        }
+
+        List<SkillModSS> skillModSS = new List<SkillModSS>(); //chargables
+        foreach (Dictionary<string, string> dict in spellDictToLoad)
+        {
+            if (dict["SuperType"] == "StateSlot")
+            {
+                int stateID = int.Parse(dict["parentID"]);
+                GV.States slotType = GV.ParseEnum<GV.States>(dict["stateSlotType"]);
+                State state = treeTracker.GetStateByID(stateID);
+                StateSlot newStateSlot = StateSlot.CreateStateSlot(slotType, state);
+                newStateSlot.ImportFromDictionary(dict, treeTracker);
+
+                if (stateID == 0 && slotType == GV.States.SkillMod)
+                {
+                    newStateSlot.Initialize(null); //remove parent state
+                    skillModSS.Add((SkillModSS)newStateSlot);
+                }
+                else
+                {
+                    state.AddStateSlot(newStateSlot);
+                }
+
+            }
+        }
+
 
         List<SkillModSS> skillModSS = new List<SkillModSS>(); //chargables
       
@@ -81,11 +115,11 @@ public class LiveSpellDict : MonoBehaviour {
         toReturn.spellInfo.InitializeSpellInfo(startState);
         toReturn.isBasicSpell = true;
         return toReturn;
-    }
+    }*/
 
 
 
-    public SpellStorage XMLDictListToSpell(string name, List<Dictionary<string,string>> spellDictToLoad)
+    public SpellStorage XMLDictListToSpell(string name, List<Dictionary<string,string>> spellDictToLoad, bool initializeOnCreate)
     {
         //turn the list given into a dictionary       
         //Spell toReturn = new Spell();
@@ -129,7 +163,7 @@ public class LiveSpellDict : MonoBehaviour {
                 int stateID = int.Parse(dict["parentID"]);
                 GV.States slotType = GV.ParseEnum<GV.States>(dict["stateSlotType"]);
                 State state = treeTracker.GetStateByID(stateID);
-                StateSlot newStateSlot = StateSlot.CreateStateSlot(slotType,state);
+                StateSlot newStateSlot = StateSlot.CreateStateSlot(slotType,state,initializeOnCreate);
                 newStateSlot.ImportFromDictionary(dict, treeTracker);
                 
                 if(stateID == 0 && slotType == GV.States.SkillMod)
@@ -154,7 +188,6 @@ public class LiveSpellDict : MonoBehaviour {
         toReturn.name = name;
         toReturn.spellInfo = new SpellInfo();
         toReturn.spellInfo.InitializeSpellInfo(startState);
-        toReturn.isBasicSpell = false;
         return toReturn;
     }
 

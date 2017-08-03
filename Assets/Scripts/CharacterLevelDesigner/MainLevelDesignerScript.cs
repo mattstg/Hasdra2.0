@@ -166,6 +166,14 @@ public class MainLevelDesignerScript : MonoBehaviour {
                 allSpellNames.Add(filename);
             }
         }
+        foreach (string file in Directory.GetFiles(XMLEncoder.GetFilePathByType(GV.fileLocationType.BasicSpells)))
+        {
+            if (Path.GetExtension(file) == ".xml")
+            {
+                string filename = Path.GetFileNameWithoutExtension(file);
+                allSpellNames.Add(filename);
+            }
+        }
     }
 
     private void LoadAllSkills()

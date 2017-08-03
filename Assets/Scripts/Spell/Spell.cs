@@ -69,6 +69,7 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
 
     public void Start() //any subclass that overwrites this needs to call Base.Update()
     {
+        Debug.Log("Spell start");
         spellRigidBody2D = this.gameObject.GetComponent<Rigidbody2D>();
         //spellDestabilization = this.GetComponent<SpellDestabilization>();
         spellDestabilization = gameObject.AddComponent<SpellDestabilization>();
@@ -188,7 +189,6 @@ public class Spell : MonoBehaviour, TemperatureSensitive, DestructibleInterface
 
         if (spellInfo.currentEnergy <= 0)
         {
-            Debug.Log("Dis fizzle");
             Fizzle();
         }
 
